@@ -1,0 +1,51 @@
+:root {
+  --primary-color: #4a6bff;
+  --primary-dark: #3a51cc;
+  --secondary-color: #1e1e2c;
+  --accent-color: #6c63ff;
+  --light-bg: #f8faff;
+  --dark-text: #2d3748;
+  --medium-text: #4a5568;
+  --light-text: #718096;
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.candidate_applications_container {
+  background-color: var(--light-bg);
+  min-width: 100vw;
+  min-height: 100vh;
+}
+
+.candidate-applications {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.application-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  background-color: #fafafa;
+}
+
+.application-card h2 {
+  margin-bottom: 0.5rem;
+}
+
+.application-card p {
+  margin: 0.25rem 0;
+}
+
+.application-card a {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.application-card a:hover {
+  text-decoration: underline;
+}

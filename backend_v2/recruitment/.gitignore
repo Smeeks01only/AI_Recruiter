@@ -1,0 +1,13 @@
+*.pyc
+__pycache__/
+*.sqlite3
+db.sqlite3
+.env
+/static/
+/media/
+*.log
+.idea/
+.vscode/
+.DS_Store
+*.pkl
+/models/

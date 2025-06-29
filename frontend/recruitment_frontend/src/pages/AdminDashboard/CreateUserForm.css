@@ -1,0 +1,44 @@
+.create-user-form {
+  background: #fafafa;
+  padding: 1rem;
+  border-radius: 8px;
+  max-width: 400px;
+}
+
+.create-user-form h2 {
+  margin-bottom: 1rem;
+}
+
+.create-user-form input,
+.create-user-form select,
+.create-user-form button {
+  width: 100%;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.create-user-form button {
+  background: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.form-message {
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.form-message.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.form-message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+}

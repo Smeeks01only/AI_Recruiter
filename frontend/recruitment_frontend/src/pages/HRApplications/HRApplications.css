@@ -1,0 +1,314 @@
+.hr-applications {
+  /* padding: 2rem; */
+  background-color: #f0f4f8;
+  min-height: 100vh;
+}
+
+.hr-applications h1 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  padding: 2rem;
+  color: #1a1a1a;
+  /* text-align: center; */
+}
+
+.job-group {
+  margin-bottom: 2rem;
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.job-group h2 {
+  font-size: 1.5rem;
+  color: #004b91;
+  margin-bottom: 1rem;
+  margin-left: 2rem;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 0.5rem;
+}
+
+.applications-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+  padding: 1rem 2rem;
+}
+
+.application-card {
+  background-color: #ffffff;
+  padding: 1.2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.application-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.application-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.application-header h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #111827;
+  font-weight: 600;
+}
+
+.status-badge {
+  font-size: 0.75rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+.status-badge.pending {
+  background-color: #fef9c3;
+  color: #ca8a04;
+}
+
+.status-badge.accepted {
+  background-color: #d1fae5; /* soft green background */
+  color: #047857;
+}
+
+.status-badge.rejected {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.score-section {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.score-pill {
+  background-color: #f3f4f6;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: #374151;
+}
+
+.explanation {
+  font-size: 0.85rem;
+  color: #4b5563;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Show only 3 lines before cutting off */
+  -webkit-box-orient: vertical;
+  max-height: 4.5em; /* Adjust if needed to match 3 lines */
+}
+
+.application-card a {
+  align-self: flex-start;
+  color: #3b82f6;
+  font-weight: 500;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.application-card a:hover {
+  text-decoration: underline;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 85vh; /* prevent modal from overflowing vertically */
+  margin-bottom: 40px;
+  overflow-y: auto; /*enable vertical scrolling inside the modal */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  animation: slideUpFadeIn 0.3s ease forwards;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  font-size: 1.8rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.2rem;
+  color: #2c3e50;
+}
+
+.modal-content p {
+  margin: 0.75rem 0;
+  line-height: 1.6;
+}
+
+.modal-content p strong {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.modal-content a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.modal-content a:hover {
+  text-decoration: underline;
+}
+
+.modal-content label {
+  display: inline-block;
+  margin-top: 1rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.modal-content select {
+  display: block;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.modal-buttons button {
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-buttons button:first-child {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.modal-buttons button:first-child:hover {
+  background-color: #218838;
+}
+
+.modal-buttons button:last-child {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.modal-buttons button:last-child:hover {
+  background-color: #5a6268;
+}
+
+/* Grouped content sections */
+.modal-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.modal-section:last-child {
+  border-bottom: none;
+}
+
+.modal-section p {
+  margin: 0.5rem 0;
+}
+
+/* Optional: make skill list stand out */
+.modal-section p strong {
+  display: inline-block;
+  min-width: 120px;
+}
+
+/* Add subtle animation */
+.modal-content {
+  animation: slideUpFadeIn 0.3s ease forwards;
+  transform: translateY(20px);
+  opacity: 0;
+}
+
+/* .modal-overlay {
+  backdrop-filter: blur(5px);
+} */
+
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.skill-pill {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+
+  background: rgba(0, 0, 0, 0.3); /* 🔹 optional: darker tint for focus */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 5vh;
+  padding-bottom: 5vh;
+  z-index: 1000;
+}
+
+body.modal-open {
+  overflow: hidden; /* disables scrolling */
+}
+
+@keyframes slideUpFadeIn {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

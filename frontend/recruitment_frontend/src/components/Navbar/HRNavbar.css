@@ -1,0 +1,51 @@
+/* Navbar container */
+.hr-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--white-color);
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  color: var(--secondary-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Brand/Logo */
+.hr-navbar-brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+/* Nav links container */
+.hr-navbar-nav {
+  display: flex;
+  gap: 2rem;
+}
+
+/* Individual nav link */
+.hr-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--medium-text);
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Icon */
+.hr-nav-link svg {
+  font-size: 1.2rem;
+}
+
+/* Hover and active states */
+.hr-nav-link:hover,
+.hr-nav-link.active {
+  background-color: var(--primary-color);
+  color: var(--white-color);
+}
