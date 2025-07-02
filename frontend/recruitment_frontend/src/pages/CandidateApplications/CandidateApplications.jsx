@@ -44,9 +44,9 @@ const CandidateApplications = () => {
             <p>
               <strong>Match Score:</strong> {app.ai_score}
             </p>
-            <p>
+            {/* <p>
               <strong>Feedback:</strong> {app.explanation}
-            </p>
+            </p> */}
             <a href={app.resume_url} target="_blank" rel="noopener noreferrer">
               View Resume
             </a>

@@ -147,7 +147,7 @@ function Register() {
               <span>Back to Home</span>
             </Link>
             <div className="auth-logo">
-              <span className="logo-text">The Item</span>
+              <span className="logo-text">AI Recruit</span>
             </div>
             <h1 className="auth-title">Create Account</h1>
             <p className="auth-subtitle">

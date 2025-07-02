@@ -92,7 +92,7 @@ function Login() {
               <span>Back to Home</span>
             </Link>
             <div className="auth-logo">
-              <span className="logo-text">The Item</span>
+              <span className="logo-text">AI Recruit</span>
             </div>
             <h1 className="auth-title">Welcome Back</h1>
             <p className="auth-subtitle">Sign in to access your account</p>

@@ -16,7 +16,7 @@ function LandingPage() {
     <div className="landing-container">
       <header className="landing-header">
         <div className="logo">
-          <span className="logo-text">AI Recruit</span>
+          <span className="logo-text">AI Powered Recruitment System</span>
         </div>
         <nav className="nav-links">
           <a href="#features" className="nav-link">
@@ -37,7 +37,7 @@ function LandingPage() {
       <main>
         <section className="hero-section">
           <div className="hero-content">
-            <h1 className="title">AI Recruit</h1>
+            <h1 className="title">AI Powered Recruitment System</h1>
             <p className="subtitle">
               Transform your hiring process with intelligent automation, bias
               reduction, and data-driven candidate matching. Streamline

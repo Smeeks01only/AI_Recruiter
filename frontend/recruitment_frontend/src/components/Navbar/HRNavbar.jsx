@@ -14,7 +14,7 @@ const HRNavbar = () => {
         className="hr-navbar-brand"
         style={{ textDecoration: "none", color: "inherit" }}
       >
-        AI Recruit
+        AI Powered Recruitment System
       </Link>
 
       <nav className="hr-navbar-nav">

@@ -17,7 +17,7 @@ const CandidatesNavbar = () => {
         className="logo"
         style={{ textDecoration: "none" }}
       >
-        AI<span className="logo-accent"> Recruit</span>
+        AI<span className="logo-accent"> Powered Recruitment System</span>
       </Link>
 
       <div className="header-controls">

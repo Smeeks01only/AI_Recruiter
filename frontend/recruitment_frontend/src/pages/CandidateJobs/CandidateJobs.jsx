@@ -14,7 +14,9 @@ const CandidateJobs = () => {
   const [message, setMessage] = useState("");
   const [showMyApplicationsModal, setShowMyApplicationsModal] = useState(false); // New state for applications modal
   const [consentGiven, setConsentGiven] = useState(false);
-
+  // Filter out jobs that the candidate has already applied to
+  const appliedJobIds = applications.map((app) => app.job); // assuming app.job is the job ID
+  const availableJobs = jobs.filter((job) => !appliedJobIds.includes(job.id));
 
   useEffect(() => {
     if (showMyApplicationsModal) {
@@ -23,7 +25,6 @@ const CandidateJobs = () => {
       document.body.classList.remove("modal-open");
     }
   }, [showMyApplicationsModal]);
-  
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -168,11 +169,14 @@ const CandidateJobs = () => {
         )}
 
         {/* Job Listings */}
+        {/* Job Listings */}
         <div className="job-listings-container">
-          {jobs.length === 0 ? (
-            <p className="no-jobs">No jobs available.</p>
+          {availableJobs.length === 0 ? (
+            <p className="no-jobs">
+              No jobs available or you've applied to all.
+            </p>
           ) : (
-            jobs.map((job) => (
+            availableJobs.map((job) => (
               <div key={job.id} className="job-card">
                 <div className="job_card_header">
                   <WorkOutlineIcon className="job-icon" />
