@@ -8,8 +8,7 @@ from django.conf import settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
-from .ml_models_utils import predict_resume
-from .resume_parser.parse_single import parse_resume_file
+from .gemini_engine import process_application
 from .retrain_model import train_and_save_models
 from .permissions import IsAdminRole  # ✅ Import custom permission
 from .bias_audit import detect_bias
@@ -36,9 +35,8 @@ def upload_resume(request):
         temp_path = temp.name
 
     try:
-        parsed_data = parse_resume_file(temp_path, job_role)
-        parsed_data['Job Role'] = job_role
-        result = predict_resume(parsed_data)
+        job_context = {'role': job_role, 'description': '', 'required_skills': [], 'preferred_education': ''}
+        result = process_application(temp_path, job_context)
         return JsonResponse(result)
 
     except Exception as e:

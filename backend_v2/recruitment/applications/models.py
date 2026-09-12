@@ -15,6 +15,12 @@ class Application(models.Model):
     parsed_email = models.EmailField(blank=True, null=True)
     parsed_phone = models.CharField(max_length=20, blank=True, null=True)
     parsed_skills = models.JSONField(blank=True, null=True)
+    
+    # New extracted fields
+    parsed_experience = models.IntegerField(default=0, blank=True, null=True)
+    parsed_education = models.CharField(max_length=255, blank=True, null=True)
+    parsed_certifications = models.TextField(blank=True, null=True)
+    parsed_projects_count = models.IntegerField(default=0, blank=True, null=True)
 
     match_score = models.IntegerField(blank=True, null=True)
     match_explanation = ArrayField(models.TextField(), blank=True, null=True)
@@ -24,4 +30,3 @@ class Application(models.Model):
 
     def __str__(self):
         return f"{self.candidate.username} - {self.job.title}"
-
