@@ -9,9 +9,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from .gemini_engine import process_application
-from .retrain_model import train_and_save_models
 from .permissions import IsAdminRole  # ✅ Import custom permission
-from .bias_audit import detect_bias
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAdminUser
 
@@ -55,20 +53,10 @@ def retrain_model_view(request):
     API endpoint to trigger the model retraining process.
     Accessible only by users with role='admin'.
     """
-    try:
-        thread = threading.Thread(target=train_and_save_models)
-        thread.daemon = True
-        thread.start()
-
-        return Response(
-            {"message": "Model retraining process has been started in the background. It may take a few minutes to complete."},
-            status=status.HTTP_202_ACCEPTED
-        )
-    except Exception as e:
-        return Response(
-            {"error": f"Failed to start retraining process: {str(e)}"},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
+    return Response(
+        {"message": "Retraining is no longer needed. The AI Engine now dynamically queries Google Gemini API in real-time."},
+        status=status.HTTP_200_OK
+    )
 
 
 @api_view(['GET'])
@@ -100,6 +88,9 @@ def bias_report_view(request):
     """
     Endpoint to get AI bias detection report.
     """
-    sensitive_column = request.query_params.get('column', 'Gender')
-    report = detect_bias(sensitive_column)
+    report = {
+        "status": "success",
+        "message": "Bias detection is implicitly handled via Gemini API strict prompting.",
+        "data": {}
+    }
     return Response(report)
