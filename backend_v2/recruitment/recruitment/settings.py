@@ -22,6 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 from dotenv import load_dotenv
+import dj_database_url
 load_dotenv()
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -95,14 +96,11 @@ WSGI_APPLICATION = 'recruitment.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Recruitmentv2',
-        'USER': 'postgres',
-        'PASSWORD': 'Orange',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL', 'postgres://postgres:Orange@localhost:5432/Recruitmentv2'),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 
