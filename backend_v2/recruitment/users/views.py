@@ -117,3 +117,34 @@ def mark_notification_read(request, pk):
     notification.is_read = True
     notification.save()
     return Response({'message': 'Notification marked as read'})
+
+from rest_framework.permissions import AllowAny
+
+@api_view(['GET'])
+@permission_classes([AllowAny])  # Allow anyone to hit this just once to seed
+def seed_users(request):
+    """Temporary endpoint to seed the database with Admin and HR accounts"""
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    
+    messages = []
+    
+    admin, created1 = User.objects.get_or_create(username='admin', defaults={'email': 'admin@admin.com', 'role': 'admin'})
+    if created1:
+        admin.set_password('admin123')
+        admin.is_superuser = True
+        admin.is_staff = True
+        admin.save()
+        messages.append("Admin created successfully! (admin / admin123)")
+        
+    hr, created2 = User.objects.get_or_create(username='hr', defaults={'email': 'hr@hr.com', 'role': 'hr'})
+    if created2:
+        hr.set_password('hr123')
+        hr.is_staff = True
+        hr.save()
+        messages.append("HR created successfully! (hr / hr123)")
+        
+    if not created1 and not created2:
+        return Response({"message": "Accounts already exist!"})
+        
+    return Response({"message": " | ".join(messages)})

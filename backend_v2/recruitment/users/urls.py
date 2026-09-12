@@ -25,4 +25,7 @@ urlpatterns = [
      # Auth endpoints
     path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
+    # Temporary seed endpoint
+    path('seed/', views.seed_users, name='seed_users'),
 ]
