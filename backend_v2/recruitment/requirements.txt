@@ -11,29 +11,22 @@ djangorestframework_simplejwt==5.5.0
 # --- ML & Data Science ---
 numpy==2.2.5
 pandas==2.3.0
-scikit-learn==1.6.1
-joblib==1.5.1
-shap==0.47.2
 
 # --- Resume Parsing Support ---
 PyPDF2==3.0.1
 python-docx==1.1.2
 
 # --- Fairness and Bias Detection ---
-fairlearn==0.12.0
+# Note: fairlearn removed for faster deployment, handled via APIs.
 
 # --- NLP / Resume Feature Extraction ---
-# spacy==3.8.5
-# en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
-# en_core_web_trf @ https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.8.0/en_core_web_trf-3.8.0-py3-none-any.whl
-# spacy-curated-transformers==0.3.1
+# Note: Spacy removed, handled via Gemini API.
 
 # --- API Docs (Optional, for Swagger/OpenAPI) ---
 drf-yasg==1.21.10
 
 # --- Advanced NLP (HuggingFace) ---
-transformers>=4.30.0
-torch>=2.0.0
+# Note: Torch and Transformers removed, handled via Gemini API.
 
 # --- Production Deployment ---
 gunicorn>=21.2.0
