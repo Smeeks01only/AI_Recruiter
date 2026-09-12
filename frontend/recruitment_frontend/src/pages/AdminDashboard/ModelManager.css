@@ -1,60 +1,43 @@
-.model-manager {
-  background-color: #ffffff;
+.model-manager-container {
+  background: white;
   padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  margin: 2rem auto;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
   text-align: center;
-  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-.model-manager h3 {
+.model-manager-container h2 {
   margin-top: 0;
-  color: #2c3e50;
-  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: var(--dark-text);
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.model-info {
+  margin-bottom: 1.5rem;
+  color: var(--medium-text);
 }
 
 .model-info p {
-  font-size: 1rem;
-  color: #444;
   margin: 0.5rem 0;
 }
 
-.last-trained {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
+.model-info strong {
+  color: var(--dark-text);
 }
 
-.refresh-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  margin-left: 4px;
-  color: #007bff;
-  transition: transform 0.2s ease;
-}
-
-.refresh-btn:hover {
-  transform: rotate(90deg);
-}
-
-.retrain-button {
-  background-color: #007bff;
+.retrain-btn {
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
   color: white;
   border: none;
-  padding: 12px 28px;
-  border-radius: 6px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-top: 1.2rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
 }
 
 .retrain-button:disabled {

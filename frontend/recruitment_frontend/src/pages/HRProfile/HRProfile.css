@@ -1,11 +1,5 @@
-.hr_profile_container {
-  background-color: #f8fafc;
-  min-height: 100vh;
-  
-}
-
 .profile-wrapper {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 

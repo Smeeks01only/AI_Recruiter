@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./BiasAudit.css";
+import API_BASE_URL from "../../config";
 
 const BiasAudit = () => {
   const [loading, setLoading] = useState(false);
@@ -15,7 +16,7 @@ const BiasAudit = () => {
     try {
       const token = localStorage.getItem("accessToken");
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/ai_engine/bias_report/",
+        `${API_BASE_URL}/api/ai_engine/bias_report/`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -32,29 +33,24 @@ const BiasAudit = () => {
   };
 
   return (
-    <div className="bias-audit">
-      <h3>Bias Detection</h3>
+    <div className="bias-audit-container">
+      <h2>Bias Detection</h2>
       <button
-        className="bias-button"
+        className="run-audit-btn"
         onClick={handleBiasCheck}
         disabled={loading}
       >
         {loading ? "Checking for Bias..." : "Run Bias Audit"}
       </button>
 
-      {error && <p className="feedback-message error">{error}</p>}
+      {error && <p className="status-message" style={{color: '#dc2626', background: '#fef2f2', borderColor: '#fecaca'}}>{error}</p>}
       {biasResult && (
-        <div
-          className={`bias-result ${
-            biasResult.bias_detected ? "biased" : "fair"
-          }`}
-        >
+        <div className="audit-results">
+          <h3>
+            {biasResult.bias_detected ? "⚠️ Bias Detected" : "✅ No Bias Detected"}
+          </h3>
           <p>
-            <strong>Status:</strong>{" "}
-            {biasResult.bias_detected ? "Bias Detected" : "No Bias Detected"}
-          </p>
-          <p>
-            <strong>Details:</strong> {biasResult.details}
+            {biasResult.details}
           </p>
         </div>
       )}

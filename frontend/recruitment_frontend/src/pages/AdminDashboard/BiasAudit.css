@@ -1,57 +1,50 @@
-.bias-audit {
-  background-color: #fffbea;
+.bias-audit-container {
+  background: white;
   padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-  margin: 2rem auto;
-  max-width: 500px;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
+  height: 100%;
 }
 
-.bias-audit h3 {
+.bias-audit-container h2 {
   margin-top: 0;
-  color: #2c3e50;
-  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: var(--dark-text);
+  font-size: 1.4rem;
 }
 
-.bias-button {
-  background-color: #e67e22;
+.run-audit-btn {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
   color: white;
   border: none;
-  padding: 12px 24px;
-  border-radius: 5px;
+  padding: 0.8rem 2rem;
   font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
   cursor: pointer;
-  margin-top: 1rem;
-  transition: background-color 0.3s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
 }
 
-.bias-button:hover:not(:disabled) {
-  background-color: #ca6f1e;
+.run-audit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
 }
 
-.bias-result {
-  margin-top: 1rem;
+.run-audit-btn:disabled {
+  background: #cbd5e1;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.audit-results {
+  margin-top: 1.5rem;
   padding: 1rem;
-  border-radius: 6px;
-  font-weight: 500;
-}
-
-.bias-result.biased {
-  background-color: #fce4e4;
-  color: #c0392b;
-  border: 1px solid #e74c3c;
-}
-
-.bias-result.fair {
-  background-color: #e9fbe9;
-  color: #27ae60;
-  border: 1px solid #2ecc71;
-}
-
-.feedback-message.error {
-  margin-top: 1rem;
-  color: #c0392b;
   background-color: #fce4e4;
   padding: 0.8rem;
   border-radius: 5px;

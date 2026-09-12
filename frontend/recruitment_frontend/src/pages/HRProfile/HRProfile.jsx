@@ -3,8 +3,9 @@ import axios from "axios";
 import CheckIcon from "@mui/icons-material/Check";
 import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from "@mui/icons-material/Close";
-import HRNavbar from "../../components/Navbar/HRNavbar";
+import HRLayout from "../../components/Layout/HRLayout";
 import "./HRProfile.css";
+import API_BASE_URL from "../../config";
 
 const HRProfile = () => {
   const [profile, setProfile] = useState({
@@ -31,7 +32,7 @@ const HRProfile = () => {
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await axios.get("http://127.0.0.1:8000/api/users/me/", {
+      const response = await axios.get(`${API_BASE_URL}/api/users/me/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -57,7 +58,7 @@ const HRProfile = () => {
   const handleSave = async (section) => {
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.put("http://127.0.0.1:8000/api/users/me/", profile, {
+      await axios.put(`${API_BASE_URL}/api/users/me/`, profile, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -82,8 +83,7 @@ const HRProfile = () => {
   };
 
   return (
-    <div className="hr_profile_container">
-      <HRNavbar />
+    <HRLayout>
       <div className="profile-wrapper">
         <h1 className="page-title">My Profile</h1>
 
@@ -342,7 +342,7 @@ const HRProfile = () => {
           </div>
         </div>
       </div>
-    </div>
+    </HRLayout>
   );
 };
 

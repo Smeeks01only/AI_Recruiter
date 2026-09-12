@@ -7,10 +7,14 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useNavigate } from "react-router-dom";
 import CandidatesNavbar from "../../components/Navbar/CandidatesNavbar";
 import "./CandidateProfile.css";
+import API_BASE_URL from "../../config";
 
 const CandidateProfile = () => {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [bio, setBio] = useState("");
@@ -22,7 +26,7 @@ const CandidateProfile = () => {
       try {
         const token = localStorage.getItem("accessToken");
         const response = await axios.get(
-          "http://127.0.0.1:8000/api/users/me/",
+          `${API_BASE_URL}/api/users/me/`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -45,7 +49,7 @@ const CandidateProfile = () => {
     try {
       const token = localStorage.getItem("accessToken");
       await axios.put(
-        `http://127.0.0.1:8000/api/users/${profile.id}/`,
+        `${API_BASE_URL}/api/users/${profile.id}/`,
         { bio },
         {
           headers: {
@@ -88,7 +92,12 @@ const CandidateProfile = () => {
       <CandidatesNavbar />
 
       <div className="profile-wrapper">
-        <h1 className="page-title">My Profile</h1>
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "2rem" }}>
+          <button onClick={() => navigate(-1)} className="back-btn">
+            <ArrowBackIcon fontSize="small" /> Back
+          </button>
+          <h1 className="page-title" style={{ marginBottom: 0 }}>My Profile</h1>
+        </div>
 
         {/* Profile Header Card */}
         <div className="profile-header-card">

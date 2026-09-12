@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useNavigate } from "react-router-dom";
 import CandidatesNavbar from "../../components/Navbar/CandidatesNavbar";
 import "./CandidateApplications.css";
+import API_BASE_URL from "../../config";
 
 const CandidateApplications = () => {
+  const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
 
   useEffect(() => {
@@ -11,7 +15,7 @@ const CandidateApplications = () => {
       try {
         const token = localStorage.getItem("accessToken");
         const res = await axios.get(
-          "http://127.0.0.1:8000/api/applications/my-applications/",
+          `${API_BASE_URL}/api/applications/my-applications/`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -28,7 +32,12 @@ const CandidateApplications = () => {
     <div className="candidate_applications_container">
       <CandidatesNavbar />
       <div className="candidate-applications">
-        <h1>Your Applications</h1>
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "2rem" }}>
+          <button onClick={() => navigate(-1)} className="back-btn">
+            <ArrowBackIcon fontSize="small" /> Back
+          </button>
+          <h1 style={{ margin: 0 }}>Your Applications</h1>
+        </div>
         {applications.length === 0 && (
           <p>You haven’t applied to any jobs yet.</p>
         )}

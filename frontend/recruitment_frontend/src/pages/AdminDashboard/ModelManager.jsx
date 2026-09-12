@@ -5,6 +5,7 @@ import AutorenewIcon from "@mui/icons-material/Autorenew";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 import "./ModelManager.css";
+import API_BASE_URL from "../../config";
 
 const ModelManager = () => {
   const [lastTrained, setLastTrained] = useState(null);
@@ -12,7 +13,7 @@ const ModelManager = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  const API_BASE_URL = "http://127.0.0.1:8000/api/ai_engine";
+  const API_BASE_URL = `${API_BASE_URL}/api/ai_engine`;
   const API_STATUS_URL = `${API_BASE_URL}/status/`;
   const API_RETRAIN_URL = `${API_BASE_URL}/retrain/`;
 
@@ -97,16 +98,16 @@ const ModelManager = () => {
   };
 
   return (
-    <div className="model-manager">
-      <h3>🧠 AI Model Management</h3>
+    <div className="model-manager-container">
+      <h2>🧠 AI Model Management</h2>
       <div className="model-info">
         <p>
           <strong>Model:</strong> Resume Scorer
         </p>
-        <p className="last-trained">
+        <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
           <strong>Last Trained:</strong> {lastTrained || "Loading..."}
           <button
-            className="refresh-btn"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#4a6bff', display: 'flex', alignItems: 'center' }}
             onClick={fetchLastTrainedDate}
             title="Refresh Status"
           >
@@ -116,29 +117,22 @@ const ModelManager = () => {
       </div>
 
       <button
-        className="retrain-button"
+        className="retrain-btn"
         onClick={handleRetrain}
         disabled={isTraining}
       >
-        {isTraining ? (
-          <>
-            <AutorenewIcon className="spin-icon" />
-            Sending Request...
-          </>
-        ) : (
-          "Retrain Model"
-        )}
+        {isTraining ? "Sending Request..." : "Retrain Model"}
       </button>
 
       {message && (
-        <p className="feedback-message success">
-          <CheckCircleIcon fontSize="small" style={{ marginRight: "5px" }} />
+        <p className="status-message">
+          <CheckCircleIcon fontSize="small" style={{ marginRight: "5px", verticalAlign: "middle" }} />
           {message}
         </p>
       )}
       {error && (
-        <p className="feedback-message error">
-          <ErrorIcon fontSize="small" style={{ marginRight: "5px" }} />
+        <p className="status-message" style={{color: '#dc2626', background: '#fef2f2', borderColor: '#fecaca'}}>
+          <ErrorIcon fontSize="small" style={{ marginRight: "5px", verticalAlign: "middle" }} />
           {error}
         </p>
       )}

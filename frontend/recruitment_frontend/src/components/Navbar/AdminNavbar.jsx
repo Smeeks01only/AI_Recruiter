@@ -1,6 +1,8 @@
 import React from "react";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import ChangeHistoryIcon from "@mui/icons-material/ChangeHistory";
 import { Link, NavLink } from "react-router-dom";
 import LogoutButton from "../Logout/LogoutButton";
 import "./AdminNavbar.css";
@@ -13,7 +15,8 @@ const AdminNavbar = () => {
         className="logo"
         style={{ textDecoration: "none" }}
       >
-        AI<span className="logo-accent">Powered Recruitment System</span>
+        <ChangeHistoryIcon style={{ color: "#4a6bff", fontSize: "2rem" }} />
+        <span>AI<span className="logo-accent"> Recruit</span></span>
       </Link>
 
       <div className="header-controls">
@@ -24,10 +27,11 @@ const AdminNavbar = () => {
         </div>
         <div className="admin-navbar-nav">
           <NavLink to="/admin/profile" className="admin-nav-link">
-            <AccountCircleIcon />
+            <AccountCircleIcon style={{ color: "#4a5568" }} />
             <span>Profile</span>
+            <KeyboardArrowDownIcon fontSize="small" />
           </NavLink>
-          <span>
+          <span className="logout-wrapper">
             <LogoutButton />
           </span>
         </div>

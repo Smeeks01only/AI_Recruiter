@@ -1,6 +1,7 @@
 // src/pages/TestimonialsPage/TestimonialsPage.jsx
 import React from "react";
 import { Link } from "react-router-dom";
+import LandingNavbar from "../../../components/Navbar/LandingNavbar";
 import "./TestimonialsPage.css";
 
 const testimonials = [
@@ -25,30 +26,7 @@ function TestimonialsPage() {
   return (
     <>
       {/* Header */}
-      <header className="landing-header">
-        <div className="logo">
-          <Link to="/" className="nav-link">
-            <span className="logo-text">AI Recruit</span>
-          </Link>
-        </div>
-        <nav className="nav-links">
-          <Link to="/about" className="nav-link">
-            About
-          </Link>
-          <Link to="/blog" className="nav-link">
-            Blog
-          </Link>
-          <Link to="/testimonials" className="nav-link">
-            Testimonials
-          </Link>
-          <Link to="/help" className="nav-link">
-            Help
-          </Link>
-          <Link to="/login" className="nav-link login-link">
-            Login
-          </Link>
-        </nav>
-      </header>
+      <LandingNavbar />
 
       {/* Page Content */}
       <div className="page-container">

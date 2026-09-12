@@ -1,21 +1,25 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Link, useLocation } from "react-router-dom"; // useLocation for active nav link
+import { Link, useLocation, NavLink } from "react-router-dom"; // useLocation for active nav link
 import axios from "axios";
-import HRNavbar from "../../components/Navbar/HRNavbar";
+import HRLayout from "../../components/Layout/HRLayout";
 import "./DashboardHR.css";
 
 // Import Material UI Icons
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import ListAltIcon from "@mui/icons-material/ListAlt";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import SettingsIcon from "@mui/icons-material/Settings";
+import WorkIcon from "@mui/icons-material/Work";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
 
 import BusinessIcon from "@mui/icons-material/Business"; // For Company
 import LocationOnIcon from "@mui/icons-material/LocationOn"; // For Location
 import CloseIcon from "@mui/icons-material/Close"; // For modal close
+import API_BASE_URL from "../../config";
 
 const DashboardHR = () => {
   const [jobs, setJobs] = useState([]);
@@ -27,18 +31,28 @@ const DashboardHR = () => {
     description: "",
     location: "",
     company: "",
-    required_skills: [],
+    required_skills: "",
     preferred_education: "",
-    preferred_titles: [],
+    preferred_titles: "",
+    is_active: true,
   });
 
   const [message, setMessage] = useState({ text: "", type: "" }); // type can be 'success' or 'error'
   const [isLoading, setIsLoading] = useState(false);
 
   const location = useLocation(); // For active navigation link
+  const searchParams = new URLSearchParams(location.search);
+  const searchQuery = searchParams.get("search")?.toLowerCase() || "";
 
-  const API_BASE_URL = "http://127.0.0.1:8000/api";
+  const API_BASE_URL = `${API_BASE_URL}/api`;
   const token = localStorage.getItem("accessToken");
+
+  // Filter jobs based on search query
+  const filteredJobs = jobs.filter(job => 
+    job.title.toLowerCase().includes(searchQuery) || 
+    job.company.toLowerCase().includes(searchQuery) ||
+    job.location.toLowerCase().includes(searchQuery)
+  );
 
   const resetFormData = () => {
     setFormData({
@@ -46,9 +60,10 @@ const DashboardHR = () => {
       description: "",
       location: "",
       company: "",
-      required_skills: [],
+      required_skills: "",
       preferred_education: "",
-      preferred_titles: [],
+      preferred_titles: "",
+      is_active: true,
     });
   };
 
@@ -79,25 +94,34 @@ const DashboardHR = () => {
   }, [fetchJobs]);
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    // Handle select element boolean values properly
+    if (name === "is_active") {
+      setFormData((prev) => ({ ...prev, [name]: value === "true" }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
-  const handleArrayInputChange = (e, fieldName) => {
-    const { value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [fieldName]: value
-        .split(",")
-        .map((skill) => skill.trim())
-        .filter((skill) => skill), // Trim and filter empty
-    }));
-  };
+  // We no longer aggressively parse the array on every keystroke
+  // to avoid stripping trailing spaces and commas.
 
   const handleCreateJob = async () => {
     setIsLoading(true);
+    
+    // Parse strings to arrays before sending to API
+    const payload = {
+      ...formData,
+      required_skills: typeof formData.required_skills === 'string' 
+        ? formData.required_skills.split(",").map(s => s.trim()).filter(s => s)
+        : formData.required_skills,
+      preferred_titles: typeof formData.preferred_titles === 'string'
+        ? formData.preferred_titles.split(",").map(s => s.trim()).filter(s => s)
+        : formData.preferred_titles,
+    };
+
     try {
-      await axios.post(`${API_BASE_URL}/jobs/create/`, formData, {
+      await axios.post(`${API_BASE_URL}/jobs/create/`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
       displayMessage("Job created successfully.", "success");
@@ -123,9 +147,9 @@ const DashboardHR = () => {
       description: job.description,
       location: job.location,
       company: job.company,
-      required_skills: job.required_skills || [],
+      required_skills: Array.isArray(job.required_skills) ? job.required_skills.join(", ") : (job.required_skills || ""),
       preferred_education: job.preferred_education || "",
-      preferred_titles: job.preferred_titles || [],
+      preferred_titles: Array.isArray(job.preferred_titles) ? job.preferred_titles.join(", ") : (job.preferred_titles || ""),
     });
     setShowEditModal(true);
   };
@@ -133,8 +157,19 @@ const DashboardHR = () => {
   const handleEditJob = async () => {
     if (!currentJob) return;
     setIsLoading(true);
+
+    const payload = {
+      ...formData,
+      required_skills: typeof formData.required_skills === 'string' 
+        ? formData.required_skills.split(",").map(s => s.trim()).filter(s => s)
+        : formData.required_skills,
+      preferred_titles: typeof formData.preferred_titles === 'string'
+        ? formData.preferred_titles.split(",").map(s => s.trim()).filter(s => s)
+        : formData.preferred_titles,
+    };
+
     try {
-      await axios.put(`${API_BASE_URL}/jobs/${currentJob.id}/`, formData, {
+      await axios.put(`${API_BASE_URL}/jobs/${currentJob.id}/`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
       displayMessage("Job updated successfully.", "success");
@@ -185,9 +220,10 @@ const DashboardHR = () => {
       description: job.description,
       location: job.location,
       company: job.company,
-      required_skills: job.required_skills || [],
+      required_skills: Array.isArray(job.required_skills) ? job.required_skills.join(", ") : (job.required_skills || ""),
       preferred_education: job.preferred_education || "",
-      preferred_titles: job.preferred_titles || [],
+      preferred_titles: Array.isArray(job.preferred_titles) ? job.preferred_titles.join(", ") : (job.preferred_titles || ""),
+      is_active: job.is_active,
     });
     setShowDetailsModal(true);
   };
@@ -205,113 +241,127 @@ const DashboardHR = () => {
     setCurrentJob(null);
   };
 
-  const NavLink = ({ to, icon, children }) => (
-    <li>
-      <Link to={to} className={location.pathname === to ? "active" : ""}>
-        {icon}
-        {children}
-      </Link>
-    </li>
-  );
-
+  // Removed custom NavLink component
   // Form fields configuration for modals
   const formFields = [
     {
       name: "title",
-      placeholder: "E.g. Senior Software Engineer",
+      placeholder: "e.g. AI Engineer Intern",
       label: "Job Title",
       required: true,
+      icon: <PersonOutlineIcon />,
     },
     {
       name: "company",
-      placeholder: "E.g. Tech Solutions Inc.",
+      placeholder: "e.g. GeekInnov",
       label: "Company Name",
       required: true,
+      icon: <BusinessIcon />,
     },
     {
       name: "location",
-      placeholder: "E.g. San Francisco, CA or Remote",
+      placeholder: "e.g. On site",
       label: "Location",
       required: true,
+      icon: <LocationOnIcon />,
     },
     {
       name: "description",
-      placeholder: "Describe the job responsibilities, requirements, etc.",
+      placeholder: "e.g. Work on NLP, ML pipelines and resume rankings",
       label: "Job Description",
       type: "textarea",
       required: true,
+      icon: <DescriptionOutlinedIcon />,
     },
     {
       name: "preferred_education",
-      placeholder: "E.g. Bachelor's in CS",
+      placeholder: "e.g. Bachelor's in CS",
       label: "Preferred Education",
+      icon: <SchoolOutlinedIcon />,
     },
     {
       name: "required_skills",
-      placeholder: "E.g. React,Node.js,Python",
+      placeholder: "e.g. Python, Machine Learning, SQL",
       label: "Required Skills",
       type: "array",
+      icon: <StarBorderIcon />,
     },
     {
       name: "preferred_titles",
-      placeholder: "E.g. Full Stack Developer,Backend Engineer",
+      placeholder: "e.g. Software Developer, ML Engineer",
       label: "Preferred Previous Titles",
       type: "array",
+      icon: <PersonOutlineIcon />,
+    },
+    {
+      name: "is_active",
+      label: "Job Status",
+      type: "select",
+      options: [
+        { label: "Open (Accepting Applications)", value: true },
+        { label: "Closed (No longer accepting)", value: false },
+      ],
+      icon: <SettingsIcon />,
     },
   ];
 
   const renderModalForm = (isEditMode) => (
     <>
-      {formFields.map((field) => (
-        <div className="form-group" key={field.name}>
-          <label htmlFor={field.name}>
-            {field.label}
-            {field.required && "*"}
-          </label>
-          {field.type === "textarea" ? (
-            <textarea
-              id={field.name}
-              name={field.name}
-              placeholder={field.placeholder}
-              value={formData[field.name]}
-              onChange={handleInputChange}
-              disabled={isLoading}
-              rows={5}
-            />
-          ) : field.type === "array" ? (
-            <input
-              type="text"
-              id={field.name}
-              name={field.name}
-              placeholder={field.placeholder}
-              value={
-                Array.isArray(formData[field.name])
-                  ? formData[field.name].join(",")
-                  : ""
-              }
-              onChange={(e) => handleArrayInputChange(e, field.name)}
-              disabled={isLoading}
-            />
-          ) : (
-            <input
-              type="text"
-              id={field.name}
-              name={field.name}
-              placeholder={field.placeholder}
-              value={formData[field.name]}
-              onChange={handleInputChange}
-              disabled={isLoading}
-            />
-          )}
-          {field.type === "array" && (
-            <small>Enter values separated by commas.</small>
-          )}
-        </div>
-      ))}
-      <div className="modal-actions">
+      <div className="modal-form-content">
+        {formFields.map((field) => (
+          <div className="form-group-premium" key={field.name}>
+            <label htmlFor={field.name}>
+              {field.label} {field.required && <span className="required-star">*</span>}
+            </label>
+            <div className={`input-wrapper ${field.type === "textarea" ? "textarea-wrapper" : ""}`}>
+              <div className="input-icon">{field.icon}</div>
+              {field.type === "textarea" ? (
+                <textarea
+                  id={field.name}
+                  name={field.name}
+                  placeholder={field.placeholder}
+                  value={formData[field.name]}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                  rows={4}
+                />
+              ) : field.type === "select" ? (
+                <select
+                  id={field.name}
+                  name={field.name}
+                  value={formData[field.name]}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                  className="modal-select-input"
+                >
+                  {field.options.map((opt, idx) => (
+                    <option key={idx} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  id={field.name}
+                  name={field.name}
+                  placeholder={field.placeholder}
+                  value={formData[field.name] || ""}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                />
+              )}
+            </div>
+            {field.type === "array" && (
+              <small className="helper-text">Enter values separated by commas.</small>
+            )}
+          </div>
+        ))}
+      </div>
+      <div className="modal-actions-premium">
         <button
           type="button"
-          className="btn btn-secondary"
+          className="btn-modal-cancel"
           onClick={closeModal}
           disabled={isLoading}
         >
@@ -319,63 +369,79 @@ const DashboardHR = () => {
         </button>
         <button
           type="button"
-          className="btn btn-primary"
+          className="btn-modal-primary"
           onClick={isEditMode ? handleEditJob : handleCreateJob}
           disabled={isLoading}
         >
-          {isLoading ? "Saving..." : isEditMode ? "Update Job" : "Create Job"}
+          {isLoading ? "Saving..." : isEditMode ? "+ Update Job" : "+ Create Job"}
         </button>
       </div>
     </>
   );
 
   return (
-    <div className="hr-dashboard-container">
-      <main className="main-content">
-        <HRNavbar />
-        <div className="dashboard-header">
-          <h1>Jobs Management</h1>
-          <button
-            onClick={() => {
-              resetFormData();
-              setShowCreateModal(true);
-            }}
-            className="btn btn-primary"
-          >
-            <AddCircleOutlineIcon /> Create New Job
-          </button>
-        </div>
+    <HRLayout>
+      <div className="hr-banner">
+            <div className="hr-banner-text">
+              <span className="hr-banner-pill">HR Management</span>
+              <h2>Jobs Management</h2>
+              <p>Create, manage and track all your job postings in one place.</p>
+            </div>
+            <div className="hr-banner-action">
+              <button
+                onClick={() => {
+                  resetFormData();
+                  setShowCreateModal(true);
+                }}
+                className="btn-create-job"
+              >
+                <AddCircleOutlineIcon /> Create New Job
+              </button>
+            </div>
+          </div>
 
         {message.text && (
           <div className={`message-toast ${message.type}`}>{message.text}</div>
         )}
 
         {
-          isLoading && jobs.length === 0 && (
+          isLoading && filteredJobs.length === 0 && (
             <p>Loading jobs...</p>
           ) /* Initial loading state */
         }
-        {!isLoading && jobs.length === 0 && (
+        {!isLoading && filteredJobs.length === 0 && (
           <div className="no-jobs-message">
-            <p>No jobs posted yet. Click "Create New Job" to get started!</p>
+            <p>No jobs found. Try a different search or click "Create New Job" to get started!</p>
           </div>
         )}
 
         <div className="job-grid">
-          {jobs.map((job) => (
-            <div key={job.id} className="job_card">
+          {filteredJobs.map((job) => (
+            <div 
+              key={job.id} 
+              className="job-card-premium clickable-card"
+              onClick={() => openDetailsModal(job)}
+            >
               <div className="job-card-header">
-                <h3>{job.title}</h3>
-                <span className=/*{`job-status ${job.status}`}*/ "job-status open">
-                  {/*job.status*/}Open
+                <div className="job-card-title-container">
+                  <div className="job-icon-container">
+                    <WorkIcon />
+                  </div>
+                  <h3>{job.title}</h3>
+                </div>
+                <span className={`job-status ${job.is_active ? 'open' : 'closed'}`}>
+                  <span className={`status-dot ${job.is_active ? 'green' : 'grey'}`}></span> 
+                  {job.is_active ? 'Open' : 'Closed'}
                 </span>
               </div>
-              <p className="job-card-company">
-                <BusinessIcon /> {job.company}
-              </p>
-              <p className="job-card-location">
-                <LocationOnIcon /> {job.location}
-              </p>
+              <div className="job-card-details">
+                <p className="job-card-company">
+                  <BusinessIcon /> {job.company}
+                </p>
+                <p className="job-card-location">
+                  <LocationOnIcon /> {job.location}
+                </p>
+              </div>
 
               <div className="job-card-creator">
                 <div className="job-card-creator-profile">
@@ -399,7 +465,10 @@ const DashboardHR = () => {
 
                 <div className="job-card-actions">
                   <button
-                    onClick={() => openEditModal(job)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openEditModal(job);
+                    }}
                     className="btn-icon edit"
                     title="Edit Job"
                     disabled={isLoading}
@@ -407,7 +476,10 @@ const DashboardHR = () => {
                     <EditIcon />
                   </button>
                   <button
-                    onClick={() => handleDeleteJob(job.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteJob(job.id);
+                    }}
                     className="btn-icon delete"
                     title="Delete Job"
                     disabled={isLoading}
@@ -415,7 +487,10 @@ const DashboardHR = () => {
                     <DeleteIcon />
                   </button>
                   <button
-                    onClick={() => openDetailsModal(job)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openDetailsModal(job);
+                    }}
                     className="btn-icon details"
                     title="View Details"
                     disabled={isLoading}
@@ -427,14 +502,21 @@ const DashboardHR = () => {
             </div>
           ))}
         </div>
-      </main>
 
       {/* Create Job Modal */}
       {showCreateModal && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <div className="modal-header">
-              <h2>Create New Job</h2>
+        <div className="modal-overlay-premium">
+          <div className="modal-premium">
+            <div className="modal-header-premium">
+              <div className="modal-title-group">
+                <div className="modal-icon-container">
+                  <WorkIcon />
+                </div>
+                <div className="modal-title-text">
+                  <h2>Create New Job</h2>
+                  <p>Provide the key details about the job posting. This will help us match the right candidates and improve results.</p>
+                </div>
+              </div>
               <button
                 onClick={closeModal}
                 className="btn-close-modal"
@@ -451,10 +533,18 @@ const DashboardHR = () => {
 
       {/* Edit Job Modal */}
       {showEditModal && currentJob && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <div className="modal-header">
-              <h2>Edit Job: {currentJob.title}</h2>
+        <div className="modal-overlay-premium">
+          <div className="modal-premium">
+            <div className="modal-header-premium">
+              <div className="modal-title-group">
+                <div className="modal-icon-container">
+                  <WorkIcon />
+                </div>
+                <div className="modal-title-text">
+                  <h2>Edit Job: {currentJob.title}</h2>
+                  <p>Update the key details about the job posting to ensure accurate matches.</p>
+                </div>
+              </div>
               <button
                 onClick={closeModal}
                 className="btn-close-modal"
@@ -468,12 +558,21 @@ const DashboardHR = () => {
           </div>
         </div>
       )}
+
       {/* Job Details Modal */}
       {showDetailsModal && currentJob && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <div className="modal-header">
-              <h2>Job Details: {currentJob.title}</h2>
+        <div className="modal-overlay-premium">
+          <div className="modal-premium">
+            <div className="modal-header-premium">
+              <div className="modal-title-group">
+                <div className="modal-icon-container">
+                  <WorkIcon />
+                </div>
+                <div className="modal-title-text">
+                  <h2>Job Details: {currentJob.title}</h2>
+                  <p>Review the details of this job posting below.</p>
+                </div>
+              </div>
               <button
                 onClick={closeDetailsModal}
                 className="btn-close-modal"
@@ -486,7 +585,7 @@ const DashboardHR = () => {
           </div>
         </div>
       )}
-    </div>
+    </HRLayout>
   );
 };
 

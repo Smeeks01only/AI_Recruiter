@@ -14,6 +14,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import API_BASE_URL from "../../config";
 
 function Register() {
   const navigate = useNavigate();
@@ -94,7 +95,7 @@ function Register() {
     const { confirmPassword, ...dataToSend } = formData;
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/users/register/", {
+      const res = await fetch(`${API_BASE_URL}/api/users/register/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -299,25 +300,7 @@ function Register() {
               )}
             </div>
 
-            <div className="form_group">
-              <label htmlFor="role">Account Type</label>
-              <div className="input-group select-group">
-                <div className="input-icon">
-                  <WorkOutlineIcon />
-                </div>
-                <select
-                  id="role"
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="candidate">Candidate / Job Seeker</option>
-                  <option value="hr">HR Manager</option>
-                  <option value="admin">Administrator</option>
-                </select>
-              </div>
-            </div>
+
 
             <div className="form_group">
               <label htmlFor="bio">Professional Bio (Optional)</label>

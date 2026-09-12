@@ -9,6 +9,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AdminNavbar from "../../components/Navbar/AdminNavbar"; // Updated for Admin
 import "./AdminProfile.css"; // You can rename this to AdminProfile.css if styles need separation
+import API_BASE_URL from "../../config";
 
 const AdminProfile = () => {
   const [profile, setProfile] = useState(null);
@@ -22,7 +23,7 @@ const AdminProfile = () => {
       try {
         const token = localStorage.getItem("accessToken");
         const response = await axios.get(
-          "http://127.0.0.1:8000/api/users/me/",
+          `${API_BASE_URL}/api/users/me/`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -45,7 +46,7 @@ const AdminProfile = () => {
     try {
       const token = localStorage.getItem("accessToken");
       await axios.put(
-        `http://127.0.0.1:8000/api/users/${profile.id}/`,
+        `${API_BASE_URL}/api/users/${profile.id}/`,
         { bio },
         {
           headers: {

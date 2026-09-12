@@ -7,6 +7,7 @@ import LeaderboardIcon from "@mui/icons-material/Leaderboard";
 
 import axios from "axios";
 import "./SystemStats.css";
+import API_BASE_URL from "../../config";
 
 const SystemStats = () => {
   const [stats, setStats] = useState({
@@ -21,13 +22,13 @@ const SystemStats = () => {
       try {
         const token = localStorage.getItem("accessToken");
         const [usersRes, jobsRes, appsRes] = await Promise.all([
-          axios.get("http://127.0.0.1:8000/api/users/", {
+          axios.get(`${API_BASE_URL}/api/users/`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }),
-          axios.get("http://127.0.0.1:8000/api/jobs/"),
-          axios.get("http://127.0.0.1:8000/api/applications/", {
+          axios.get(`${API_BASE_URL}/api/jobs/`),
+          axios.get(`${API_BASE_URL}/api/applications/`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },

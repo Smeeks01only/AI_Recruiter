@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./CreateUserForm.css";
+import API_BASE_URL from "../../config";
 
 const CreateUserForm = ({ onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -23,7 +24,7 @@ const CreateUserForm = ({ onSuccess }) => {
     setMessage(""); // Clear old message
     try {
       const res = await axios.post(
-        "http://127.0.0.1:8000/api/users/create/",
+        `${API_BASE_URL}/api/users/create/`,
         formData,
         {
           headers: {

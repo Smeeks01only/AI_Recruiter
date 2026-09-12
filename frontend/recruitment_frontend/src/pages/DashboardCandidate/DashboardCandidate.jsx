@@ -9,7 +9,7 @@ import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import SearchIcon from "@mui/icons-material/Search";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import CandidatesNavbar from "../../components/Navbar/CandidatesNavbar";
 
 import "./DashboardCandidate.css";
@@ -63,17 +63,20 @@ const DashboardCandidate = () => {
     {
       label: "Applied Jobs",
       value: stats?.total_applied || 0,
-      icon: <AssignmentOutlinedIcon className="stat-icon blue" />,
+      icon: <AssignmentOutlinedIcon className="stat-icon blue-icon" />,
+      colorClass: "blue",
     },
     {
       label: "Shortlisted",
       value: stats?.total_shortlisted || 0,
-      icon: <TrendingUpIcon className="stat-icon purple" />,
+      icon: <TrendingUpIcon className="stat-icon purple-icon" />,
+      colorClass: "purple",
     },
     {
       label: "Rejected",
       value: stats?.total_rejected || 0,
-      icon: <StarOutlineIcon className="stat-icon green" />,
+      icon: <StarOutlineIcon className="stat-icon green-icon" />,
+      colorClass: "green",
     },
   ];
 
@@ -82,19 +85,24 @@ const DashboardCandidate = () => {
       <CandidatesNavbar />
 
       <div className="dashboard-content">
-        <div className="welcome-section">
-          <div>
-            <h1 className="welcome-title">Welcome back, Candidate 👋</h1>
+        <div className="welcome-banner">
+          <div className="welcome-text-content">
+            <div className="welcome-pill">✨ Welcome to AI Recruit</div>
+            <h1 className="welcome-title">
+              Hello {stats?.candidate_name || "Candidate"} <span className="wave-emoji">👋</span>
+            </h1>
             <p className="welcome-subtitle">
               Pick up where you left off on your job search journey.
             </p>
           </div>
-          <button
-            className="primary-button"
-            onClick={() => navigate("/candidate/jobs")}
-          >
-            Browse Jobs
-          </button>
+          <div className="welcome-actions">
+            <button
+              className="primary-button-banner"
+              onClick={() => navigate("/candidate/jobs")}
+            >
+              Browse Jobs <ArrowForwardIcon className="btn-arrow" />
+            </button>
+          </div>
         </div>
 
         {/* ✅ Stats Grid */}
@@ -103,8 +111,10 @@ const DashboardCandidate = () => {
             <p>Loading stats...</p>
           ) : (
             displayStats.map((stat, index) => (
-              <div key={index} className="stat-card">
-                <div className="stat_icon_container">{stat.icon}</div>
+              <div key={index} className={`stat-card border-${stat.colorClass}`}>
+                <div className={`stat_icon_container ${stat.colorClass}-bg`}>
+                  {stat.icon}
+                </div>
                 <div className="stat-content">
                   <p className="stat-label">{stat.label}</p>
                   <p className="stat-value">{stat.value}</p>
@@ -115,8 +125,10 @@ const DashboardCandidate = () => {
         </div>
 
         {/* Main Actions */}
-        {/* Main Actions */}
-        <h2 className="section-title">Quick Actions</h2>
+        <div className="quick-actions-header">
+          <h2 className="section-title">Quick Actions</h2>
+          <p className="section-subtitle">Manage your applications and job search from here.</p>
+        </div>
         <div className="action-cards">
           {/* View / Edit Profile */}
           <div
@@ -124,10 +136,10 @@ const DashboardCandidate = () => {
             onClick={() => navigate("/candidate/profile")}
           >
             <div className="action-card-header">
-              <div className="icon-container blue">
-                <PersonOutlineIcon className="action-icon" />
+              <div className="icon-container blue-bg">
+                <PersonOutlineIcon className="action-icon blue-icon" />
               </div>
-              <KeyboardArrowRightIcon className="arrow-icon" />
+              <ArrowForwardIcon className="arrow-icon" />
             </div>
             <h3 className="action-title">View Your Profile</h3>
             <p className="action-description">
@@ -141,10 +153,10 @@ const DashboardCandidate = () => {
             onClick={() => navigate("/candidate/jobs")}
           >
             <div className="action-card-header">
-              <div className="icon-container purple">
-                <WorkOutlineIcon className="action-icon" />
+              <div className="icon-container purple-bg">
+                <WorkOutlineIcon className="action-icon purple-icon" />
               </div>
-              <KeyboardArrowRightIcon className="arrow-icon" />
+              <ArrowForwardIcon className="arrow-icon" />
             </div>
             <h3 className="action-title">Browse Jobs</h3>
             <p className="action-description">
@@ -158,10 +170,10 @@ const DashboardCandidate = () => {
             onClick={() => navigate("/candidate/applications")}
           >
             <div className="action-card-header">
-              <div className="icon-container green">
-                <AssignmentOutlinedIcon className="action-icon" />
+              <div className="icon-container green-bg">
+                <AssignmentOutlinedIcon className="action-icon green-icon" />
               </div>
-              <KeyboardArrowRightIcon className="arrow-icon" />
+              <ArrowForwardIcon className="arrow-icon" />
             </div>
             <h3 className="action-title">Track Applications</h3>
             <p className="action-description">

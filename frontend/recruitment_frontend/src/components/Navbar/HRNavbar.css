@@ -1,51 +1,142 @@
-/* Navbar container */
-.hr-navbar {
+.header {
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 1rem 2.5rem;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  background-color: var(--white-color);
-  padding: 1rem 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  color: var(--secondary-color);
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
-/* Brand/Logo */
-.hr-navbar-brand {
+.logo {
   font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary-color);
-}
-
-/* Nav links container */
-.hr-navbar-nav {
-  display: flex;
-  gap: 2rem;
-}
-
-/* Individual nav link */
-.hr-nav-link {
+  font-weight: 800;
+  color: var(--secondary-color);
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.logo-accent {
+  color: var(--primary-color);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  background-color: #f5f7ff;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  width: 320px;
+  transition: all 0.3s ease;
+}
+
+.search-container:focus-within {
+  background-color: #eef1ff;
+  box-shadow: 0 0 0 2px rgba(74, 107, 255, 0.2);
+}
+
+.search-icon {
+  color: #a0aec0;
+  margin-right: 0.5rem;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  font-size: 0.9rem;
+  color: var(--dark-text);
+}
+
+.notification-container {
+  position: relative;
+}
+
+.notification-icon {
+  font-size: 1.5rem;
+  color: #a0aec0;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.notification-icon:hover {
+  color: var(--primary-color);
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #f56565;
+  color: white;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.user-avatar {
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Specific styling for the HR nav links and logout to match the design */
+.hr-navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.hr-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
   text-decoration: none;
   color: var(--medium-text);
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+}
+
+.hr-nav-link:hover {
+  color: var(--primary-color);
+}
+
+.logout-wrapper button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: rgba(255, 99, 132, 0.08);
+  color: #ff4d4f;
+  border: 1px solid rgba(255, 99, 132, 0.2);
   padding: 0.5rem 1rem;
-  border-radius: 6px;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-/* Icon */
-.hr-nav-link svg {
-  font-size: 1.2rem;
-}
-
-/* Hover and active states */
-.hr-nav-link:hover,
-.hr-nav-link.active {
-  background-color: var(--primary-color);
-  color: var(--white-color);
+.logout-wrapper button:hover {
+  background-color: rgba(255, 99, 132, 0.15);
 }

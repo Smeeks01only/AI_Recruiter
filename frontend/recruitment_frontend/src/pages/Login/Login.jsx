@@ -10,6 +10,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import LoginIcon from "@mui/icons-material/Login";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import API_BASE_URL from "../../config";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -25,7 +26,7 @@ function Login() {
     setErrorMessage("");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/users/login/", {
+      const response = await fetch(`${API_BASE_URL}/api/users/login/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
@@ -43,7 +44,7 @@ function Login() {
       localStorage.setItem("refreshToken", refresh);
 
       // Get user profile
-      const profileRes = await fetch("http://127.0.0.1:8000/api/users/me/", {
+      const profileRes = await fetch(`${API_BASE_URL}/api/users/me/`, {
         headers: {
           Authorization: `Bearer ${access}`,
         },

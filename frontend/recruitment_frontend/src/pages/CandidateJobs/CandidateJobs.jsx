@@ -2,21 +2,41 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
+import BusinessIcon from "@mui/icons-material/Business";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import DescriptionIcon from "@mui/icons-material/Description";
+import SchoolIcon from "@mui/icons-material/School";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import CloseIcon from "@mui/icons-material/Close";
+import WorkIcon from "@mui/icons-material/Work";
+import PersonIcon from "@mui/icons-material/Person";
+import { useNavigate, useLocation } from "react-router-dom";
 import CandidatesNavbar from "../../components/Navbar/CandidatesNavbar";
 import "./CandidateJobs.css";
+import API_BASE_URL from "../../config";
 
 const CandidateJobs = () => {
+  const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
   const [applications, setApplications] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [resumeFile, setResumeFile] = useState(null);
-  const [coverLetterFile, setCoverLetterFile] = useState("");
   const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [showMyApplicationsModal, setShowMyApplicationsModal] = useState(false); // New state for applications modal
   const [consentGiven, setConsentGiven] = useState(false);
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const searchQuery = searchParams.get("search")?.toLowerCase() || "";
+
   // Filter out jobs that the candidate has already applied to
   const appliedJobIds = applications.map((app) => app.job); // assuming app.job is the job ID
-  const availableJobs = jobs.filter((job) => !appliedJobIds.includes(job.id));
+  const availableJobs = jobs.filter((job) => {
+    const matchesSearch = job.title.toLowerCase().includes(searchQuery) || job.company.toLowerCase().includes(searchQuery) || job.description.toLowerCase().includes(searchQuery);
+    return !appliedJobIds.includes(job.id) && job.is_active && matchesSearch;
+  });
 
   useEffect(() => {
     if (showMyApplicationsModal) {
@@ -30,7 +50,7 @@ const CandidateJobs = () => {
     const fetchJobs = async () => {
       try {
         const token = localStorage.getItem("accessToken");
-        const res = await axios.get("http://127.0.0.1:8000/api/jobs/", {
+        const res = await axios.get(`${API_BASE_URL}/api/jobs/`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setJobs(res.data);
@@ -43,7 +63,7 @@ const CandidateJobs = () => {
       try {
         const token = localStorage.getItem("accessToken");
         const res = await axios.get(
-          "http://127.0.0.1:8000/api/applications/my-applications/",
+          `${API_BASE_URL}/api/applications/my-applications/`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -61,7 +81,6 @@ const CandidateJobs = () => {
   const openApplyModal = (job) => {
     setSelectedJob(job);
     setResumeFile(null);
-    setCoverLetterFile(null);
     setMessage("");
   };
 
@@ -79,24 +98,20 @@ const CandidateJobs = () => {
     setResumeFile(e.target.files[0]);
   };
 
-  const handleCoverLetterChange = (e) => {
-    setCoverLetterFile(e.target.files[0]);
-  };
-
   const submitApplication = async () => {
-    if (!resumeFile || !coverLetterFile.trim()) {
-      setMessage("Please provide both resume and cover letter.");
+    if (!resumeFile) {
+      setMessage("Please provide your resume.");
       return;
     }
 
+    setIsSubmitting(true);
     const form = new FormData();
     form.append("job", selectedJob.id);
     form.append("resume", resumeFile);
-    form.append("cover_letter", coverLetterFile); // now it's just plain text
 
     try {
       const token = localStorage.getItem("accessToken");
-      await axios.post("http://127.0.0.1:8000/api/applications/apply/", form, {
+      await axios.post(`${API_BASE_URL}/api/applications/apply/`, form, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -117,6 +132,8 @@ const CandidateJobs = () => {
         type: "error",
         text: err.response?.data?.detail || "❌ Failed to submit application.",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -125,7 +142,12 @@ const CandidateJobs = () => {
       <CandidatesNavbar />
       <div className="candidate-jobs">
         <div className="header-actions">
-          <h1 className="page-title">Job Listings</h1>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <button onClick={() => navigate(-1)} className="back-btn">
+              <ArrowBackIcon fontSize="small" /> Back
+            </button>
+            <h1 className="page-title">Job Listings</h1>
+          </div>
           <button
             onClick={toggleMyApplicationsModal}
             className="my-applications-btn"
@@ -137,33 +159,52 @@ const CandidateJobs = () => {
 
         {/* My Applications Modal */}
         {showMyApplicationsModal && (
-          <div className="modal-overlay active">
-            <div className="modal">
-              <h2 className="modal-title">My Applications</h2>
-              {applications.length > 0 ? (
-                applications.map((app) => (
-                  <div key={app.id} className="application-card-modal">
-                    <p>
-                      <strong>Job Title:</strong>{" "}
-                      {app.job_title || app.job?.title || "N/A"}
-                    </p>
-                    <p>
-                      <strong>Status:</strong> {app.status}
-                    </p>
-                    <p>
-                      <strong>Applied On:</strong>{" "}
-                      {new Date(app.created_at).toLocaleDateString()}
-                    </p>
+          <div className="modal-overlay-premium active">
+            <div className="modal-premium" style={{ maxWidth: '600px' }}>
+              <div className="modal-header-premium">
+                <div className="modal-title-group">
+                  <div className="modal-icon-container">
+                    <AssignmentIndIcon />
                   </div>
-                ))
-              ) : (
-                <p className="no-apps-text">
-                  You haven't applied to any jobs yet.
-                </p>
-              )}
-              <button className="close-btn" onClick={toggleMyApplicationsModal}>
-                Close
-              </button>
+                  <div className="modal-title-text">
+                    <h2>My Applications</h2>
+                    <p>Track the status of your submitted applications.</p>
+                  </div>
+                </div>
+                <button
+                  onClick={toggleMyApplicationsModal}
+                  className="btn-close-modal"
+                  aria-label="Close modal"
+                >
+                  <CloseIcon />
+                </button>
+              </div>
+
+              <div className="modal-form-content">
+                {applications.length > 0 ? (
+                  <div className="app-history-list">
+                    {applications.map((app) => {
+                      const statusClass = `status-${(app.status || 'applied').toLowerCase()}`;
+                      return (
+                        <div key={app.id} className="app-history-card">
+                          <div className="app-history-info">
+                            <h4>{app.job_title || app.job?.title || "N/A"}</h4>
+                            <p>Applied on {new Date(app.created_at).toLocaleDateString()}</p>
+                          </div>
+                          <div className={`app-history-status ${statusClass}`}>
+                            {app.status || 'Applied'}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="no-apps-message-premium">
+                    <div className="empty-icon"><WorkOutlineIcon /></div>
+                    <p>You haven't applied to any jobs yet.</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -200,81 +241,146 @@ const CandidateJobs = () => {
 
         {/* Apply for Job Modal */}
         {selectedJob && (
-          <div className="modal-overlay active">
-            <div className="modal">
-              {message && (
-                <div
-                  className={`msg ${
-                    message.type === "success" ? "msg-success" : "msg-error"
-                  }`}
-                >
-                  {message.text}
+          <div className="modal-overlay-premium active">
+            <div className="modal-premium">
+              <div className="modal-header-premium">
+                <div className="modal-title-group">
+                  <div className="modal-icon-container">
+                    <WorkIcon />
+                  </div>
+                  <div className="modal-title-text">
+                    <h2>Job Details: {selectedJob.title}</h2>
+                    <p>Review the details of this job posting below.</p>
+                  </div>
                 </div>
-              )}
-              <h2 className="modal-title">{selectedJob.title}</h2>
-              <div className="job-details">
-                <p>
-                  <strong>Company:</strong> {selectedJob.company}
-                </p>
-                <p>
-                  <strong>Location:</strong> {selectedJob.location}
-                </p>
-                <p>
-                  <strong>Description:</strong> {selectedJob.description}
-                </p>
-                <p>
-                  <strong>Required Skills:</strong>{" "}
-                  {selectedJob.required_skills?.join(", ")}
-                </p>
-                <p>
-                  <strong>Preferred Education:</strong>{" "}
-                  {selectedJob.preferred_education}
-                </p>
-                <p>
-                  <strong>Preferred Titles:</strong>{" "}
-                  {selectedJob.preferred_titles?.join(", ")}
-                </p>
+                <button
+                  onClick={closeModal}
+                  className="btn-close-modal"
+                  aria-label="Close modal"
+                >
+                  <CloseIcon />
+                </button>
               </div>
 
-              <div className="apply-form">
-                <label className="input-label">Upload Resume</label>
-                <input
-                  type="file"
-                  onChange={handleResumeChange}
-                  className="file-input"
-                />
-
-                <label className="input-label">Cover Letter</label>
-                <textarea
-                  rows="6"
-                  placeholder="Write your cover letter here..."
-                  value={coverLetterFile}
-                  onChange={(e) => setCoverLetterFile(e.target.value)}
-                  className="textarea-input"
-                ></textarea>
-                <input
-                  type="checkbox"
-                  checked={consentGiven}
-                  onChange={(e) => setConsentGiven(e.target.checked)}
-                  required
-                />
-                <label>
-                  I consent to my data being processed in accordance with
-                  GDPR/CCPA and the Privacy Policy.
-                </label>
-
-                <div className="form-buttons">
-                  <button
-                    onClick={submitApplication}
-                    className="submit-btn"
-                    disabled={!consentGiven}
+              <div className="modal-form-content">
+                {message && (
+                  <div
+                    className={`msg ${
+                      message.type === "success" ? "msg-success" : "msg-error"
+                    }`}
+                    style={{ marginBottom: "1rem" }}
                   >
-                    Submit Application
-                  </button>
-                  <button onClick={closeModal} className="close-btn">
-                    Cancel
-                  </button>
+                    {message.text}
+                  </div>
+                )}
+                
+                <div className="form-group-premium">
+                  <label>Company Name</label>
+                  <div className="input-wrapper">
+                    <div className="input-icon"><BusinessIcon /></div>
+                    <input type="text" value={selectedJob.company} disabled />
+                  </div>
                 </div>
+
+                <div className="form-group-premium">
+                  <label>Location</label>
+                  <div className="input-wrapper">
+                    <div className="input-icon"><LocationOnIcon /></div>
+                    <input type="text" value={selectedJob.location} disabled />
+                  </div>
+                </div>
+
+                <div className="form-group-premium">
+                  <label>Job Description</label>
+                  <div className="input-wrapper textarea-wrapper">
+                    <div className="input-icon"><DescriptionIcon /></div>
+                    <textarea value={selectedJob.description} disabled rows={4} />
+                  </div>
+                </div>
+
+                <div className="form-group-premium">
+                  <label>Preferred Education</label>
+                  <div className="input-wrapper">
+                    <div className="input-icon"><SchoolIcon /></div>
+                    <input type="text" value={selectedJob.preferred_education} disabled />
+                  </div>
+                </div>
+
+                <div className="form-group-premium">
+                  <label>Required Skills</label>
+                  <div className="input-wrapper">
+                    <div className="input-icon"><AssignmentIndIcon /></div>
+                    <input type="text" value={selectedJob.required_skills?.join(", ")} disabled />
+                  </div>
+                </div>
+
+                <div className="form-group-premium">
+                  <label>Preferred Titles</label>
+                  <div className="input-wrapper">
+                    <div className="input-icon"><WorkOutlineIcon /></div>
+                    <input type="text" value={selectedJob.preferred_titles?.join(", ")} disabled />
+                  </div>
+                </div>
+
+                <hr style={{ margin: "2rem 0", borderTop: "1px dashed #cbd5e1" }} />
+
+                <div className="apply-form-premium">
+                  <h3 className="form-title" style={{ marginTop: 0 }}>Your Application</h3>
+                  
+                  <div className="premium-file-upload">
+                    <input
+                      type="file"
+                      onChange={handleResumeChange}
+                      className="hidden-file-input"
+                      id="resume-upload"
+                      accept=".pdf,.doc,.docx"
+                    />
+                    <label htmlFor="resume-upload" className="file-upload-label">
+                      <div className="upload-icon-circle">
+                        {resumeFile ? <CheckCircleIcon className="success-icon" /> : <UploadFileIcon className="upload-icon" />}
+                      </div>
+                      <span className="upload-main-text">
+                        {resumeFile ? resumeFile.name : "Click to upload your resume"}
+                      </span>
+                      <span className="upload-sub-text">
+                        {resumeFile ? "File selected successfully" : "PDF, DOCX up to 5MB"}
+                      </span>
+                    </label>
+                  </div>
+
+                  <div className="premium-consent">
+                    <label className="custom-checkbox-wrapper">
+                      <input
+                        type="checkbox"
+                        checked={consentGiven}
+                        onChange={(e) => setConsentGiven(e.target.checked)}
+                      />
+                      <span className="custom-checkmark"></span>
+                      <span className="consent-text">
+                        I agree to the processing of my personal data according to the Privacy Policy.
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="modal-actions-premium">
+                <button
+                  type="button"
+                  className="btn-modal-cancel"
+                  onClick={closeModal}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn-modal-primary"
+                  onClick={submitApplication}
+                  disabled={!consentGiven || isSubmitting}
+                >
+                  {isSubmitting ? "Submitting..." : "+ Submit Application"}
+                </button>
               </div>
             </div>
           </div>

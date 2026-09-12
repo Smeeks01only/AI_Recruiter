@@ -2,6 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import AI_Recruit from "../../assets/images/AI_Recruit.png";
+import LandingNavbar from "../../components/Navbar/LandingNavbar";
 import "./LandingPage.css";
 
 // Import Material UI Icons
@@ -10,58 +11,48 @@ import SpeedIcon from "@mui/icons-material/Speed";
 import EqualizerIcon from "@mui/icons-material/Equalizer";
 import SecurityIcon from "@mui/icons-material/Security";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import ChangeHistoryIcon from "@mui/icons-material/ChangeHistory";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 
 function LandingPage() {
   return (
     <div className="landing-container">
-      <header className="landing-header">
-        <div className="logo">
-          <span className="logo-text">AI Powered Recruitment System</span>
-        </div>
-        <nav className="nav-links">
-          <a href="#features" className="nav-link">
-            Features
-          </a>
-          <a href="#about" className="nav-link">
-            About
-          </a>
-          {/* <a href="#pricing" className="nav-link">
-            Pricing
-          </a> */}
-          <Link to="/login" className="nav-link login-link">
-            Login
-          </Link>
-        </nav>
-      </header>
+      <LandingNavbar />
 
       <main>
         <section className="hero-section">
+          <div className="hero-background">
+            <div className="blob blob-1"></div>
+            <div className="blob blob-2"></div>
+          </div>
           <div className="hero-content">
-            <h1 className="title">AI Powered Recruitment System</h1>
+            <div className="hero-badge">Next Generation ATS</div>
+            <h1 className="title">
+              Hire smarter with <br/> <span className="text-gradient">AI Recruit</span>
+            </h1>
             <p className="subtitle">
               Transform your hiring process with intelligent automation, bias
-              reduction, and data-driven candidate matching. Streamline
-              recruitment, enhance decision-making, and deliver a faster, fairer
-              experience for both candidates and employers.
+              reduction, and data-driven candidate matching. Find the perfect fit, faster.
             </p>
             <div className="btn-group">
-              <Link to="/register" className="btn primary">
-                Get Started <ArrowForwardIcon className="icon-right" />
+              <Link to="/register" className="btn primary btn-glow">
+                Start Hiring Now <ArrowForwardIcon className="icon-right" />
               </Link>
-              {/* <Link to="/demo" className="btn secondary">
-                See Demo
-              </Link> */}
+              <div className="hero-trust">
+                <CheckCircleOutlineIcon className="trust-icon" /> No credit card required
+              </div>
             </div>
           </div>
           <div className="hero-image">
-            <div className="image-placeholder">
-              <img src={AI_Recruit} alt="AI Recruitment" />
+            <div className="image-placeholder floating-effect">
+              <div className="glass-overlay"></div>
+              <img src={AI_Recruit} alt="AI Recruitment Interface" />
             </div>
           </div>
         </section>
 
         <section className="features-section" id="features">
-          <h2 className="section-title">Why Choose AI Recruit</h2>
+          <h2 className="landing-section-title">Why Choose AI Recruit</h2>
 
           <div className="features-grid">
             <div className="feature-card">
@@ -112,13 +103,21 @@ function LandingPage() {
       </main>
 
       <footer className="landing-footer">
+        <div className="footer-top-gradient"></div>
         <div className="cta-section">
           <h2>Ready to transform your recruitment process?</h2>
-          {/* <Link to="/register" className="btn primary">
-            Start Free Trial
-          </Link> */}
+          <Link to="/register" className="btn primary footer-cta">
+            Get Started for Free
+          </Link>
         </div>
         <div className="footer-links">
+          <div className="footer-column brand-column">
+            <div className="logo footer-logo">
+              <ChangeHistoryIcon className="logo-icon" />
+              <span className="logo-text">AI Recruit</span>
+            </div>
+            <p>The modern, intelligent applicant tracking system designed to help you build world-class teams.</p>
+          </div>
           <div className="footer-column">
             <h4>Company</h4>
             <Link to="/about">About Us</Link>
@@ -126,8 +125,7 @@ function LandingPage() {
           </div>
           <div className="footer-column">
             <h4>Product</h4>
-            <a href="/features">Features</a>
-            {/* <a href="#pricing">Pricing</a> */}
+            <a href="#features">Features</a>
             <Link to="/testimonials">Testimonials</Link>
           </div>
           <div className="footer-column">
@@ -138,7 +136,7 @@ function LandingPage() {
           </div>
         </div>
         <div className="copyright">
-          © {new Date().getFullYear()} The Item. All rights reserved.
+          © {new Date().getFullYear()} AI Recruit. All rights reserved.
         </div>
       </footer>
     </div>
