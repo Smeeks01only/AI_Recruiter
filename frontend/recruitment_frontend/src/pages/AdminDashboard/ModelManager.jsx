@@ -13,9 +13,9 @@ const ModelManager = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  const API_BASE_URL = `${API_BASE_URL}/api/ai_engine`;
-  const API_STATUS_URL = `${API_BASE_URL}/status/`;
-  const API_RETRAIN_URL = `${API_BASE_URL}/retrain/`;
+  const API_URL = `${API_BASE_URL}/api/ai_engine`;
+  const API_STATUS_URL = `${API_URL}/status/`;
+  const API_RETRAIN_URL = `${API_URL}/retrain/`;
 
   const fetchLastTrainedDate = useCallback(async () => {
     setError("");

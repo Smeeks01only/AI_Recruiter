@@ -44,7 +44,7 @@ const DashboardHR = () => {
   const searchParams = new URLSearchParams(location.search);
   const searchQuery = searchParams.get("search")?.toLowerCase() || "";
 
-  const API_BASE_URL = `${API_BASE_URL}/api`;
+  const API_URL = `${API_BASE_URL}/api`;
   const token = localStorage.getItem("accessToken");
 
   // Filter jobs based on search query
@@ -77,7 +77,7 @@ const DashboardHR = () => {
   const fetchJobs = useCallback(async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get(`${API_BASE_URL}/jobs/`, {
+      const res = await axios.get(`${API_URL}/jobs/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setJobs(res.data);
@@ -121,7 +121,7 @@ const DashboardHR = () => {
     };
 
     try {
-      await axios.post(`${API_BASE_URL}/jobs/create/`, payload, {
+      await axios.post(`${API_URL}/jobs/create/`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
       displayMessage("Job created successfully.", "success");
@@ -169,7 +169,7 @@ const DashboardHR = () => {
     };
 
     try {
-      await axios.put(`${API_BASE_URL}/jobs/${currentJob.id}/`, payload, {
+      await axios.put(`${API_URL}/jobs/${currentJob.id}/`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
       displayMessage("Job updated successfully.", "success");
@@ -198,7 +198,7 @@ const DashboardHR = () => {
       return;
     setIsLoading(true);
     try {
-      await axios.delete(`${API_BASE_URL}/jobs/${id}/`, {
+      await axios.delete(`${API_URL}/jobs/${id}/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       displayMessage("Job deleted successfully.", "success");
