@@ -34,7 +34,7 @@ GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', None)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost,ai-recruiter-zofp.onrender.com').split(',')
 
 
 # Application definition
@@ -169,7 +169,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.Users'
 
 CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'True') == 'True'
-CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', '').split(',') if os.environ.get('CORS_ALLOWED_ORIGINS') else []
+# Adding Vercel URLs to the default if not provided via Environment Variables
+CORS_ALLOWED_ORIGINS = os.environ.get(
+    'CORS_ALLOWED_ORIGINS', 
+    'http://localhost:5173,http://127.0.0.1:5173,https://ai-recruiter-two.vercel.app'
+).split(',')
 
 # Email Configuration (Console Backend for Development)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
