@@ -32,4 +32,4 @@ dist-ssr
 *.rar
 
 # Ignore large images if you prefer (or be specific)
-*.png
+# *.png
