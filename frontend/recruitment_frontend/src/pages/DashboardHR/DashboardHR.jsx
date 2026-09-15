@@ -19,6 +19,7 @@ import StarBorderIcon from "@mui/icons-material/StarBorder";
 import BusinessIcon from "@mui/icons-material/Business"; // For Company
 import LocationOnIcon from "@mui/icons-material/LocationOn"; // For Location
 import CloseIcon from "@mui/icons-material/Close"; // For modal close
+import UploadFileIcon from "@mui/icons-material/UploadFile"; // For manual CV upload
 import API_BASE_URL from "../../config";
 
 const DashboardHR = () => {
@@ -39,6 +40,10 @@ const DashboardHR = () => {
 
   const [message, setMessage] = useState({ text: "", type: "" }); // type can be 'success' or 'error'
   const [isLoading, setIsLoading] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [resumeFile, setResumeFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState("");
 
   const location = useLocation(); // For active navigation link
   const searchParams = new URLSearchParams(location.search);
@@ -237,8 +242,53 @@ const DashboardHR = () => {
   const closeModal = () => {
     setShowCreateModal(false);
     setShowEditModal(false);
+    setShowUploadModal(false);
     resetFormData();
     setCurrentJob(null);
+    setResumeFile(null);
+    setUploadMessage("");
+  };
+
+  const openUploadModal = (job) => {
+    setCurrentJob(job);
+    setResumeFile(null);
+    setUploadMessage("");
+    setShowUploadModal(true);
+  };
+
+  const handleResumeChange = (e) => {
+    setResumeFile(e.target.files[0]);
+  };
+
+  const handleUploadCV = async () => {
+    if (!resumeFile) {
+      setUploadMessage("Please select a PDF resume to upload.");
+      return;
+    }
+    setIsUploading(true);
+    setUploadMessage("");
+
+    const form = new FormData();
+    form.append("job", currentJob.id);
+    form.append("resume", resumeFile);
+
+    try {
+      await axios.post(`${API_URL}/applications/hr-upload/`, form, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      displayMessage("CV uploaded and parsed successfully!", "success");
+      setShowUploadModal(false);
+      setResumeFile(null);
+      setCurrentJob(null);
+    } catch (err) {
+      console.error("Upload CV error:", err);
+      setUploadMessage(err.response?.data?.error || err.response?.data?.detail || "Failed to upload CV. Please try again.");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   // Removed custom NavLink component
@@ -478,13 +528,13 @@ const DashboardHR = () => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleDeleteJob(job.id);
+                      openUploadModal(job);
                     }}
-                    className="btn-icon delete"
-                    title="Delete Job"
+                    className="btn-icon upload"
+                    title="Upload CV"
                     disabled={isLoading}
                   >
-                    <DeleteIcon />
+                    <UploadFileIcon />
                   </button>
                   <button
                     onClick={(e) => {
@@ -496,6 +546,17 @@ const DashboardHR = () => {
                     disabled={isLoading}
                   >
                     <InfoOutlinedIcon />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteJob(job.id);
+                    }}
+                    className="btn-icon delete"
+                    title="Delete Job"
+                    disabled={isLoading}
+                  >
+                    <DeleteIcon />
                   </button>
                 </div>
               </div>
@@ -582,6 +643,78 @@ const DashboardHR = () => {
               </button>
             </div>
             {renderModalForm(false)} {/* false makes it read-only */}
+          </div>
+        </div>
+      )}
+
+      {/* Upload CV Modal */}
+      {showUploadModal && currentJob && (
+        <div className="modal-overlay-premium">
+          <div className="modal-premium" style={{ maxWidth: '500px' }}>
+            <div className="modal-header-premium">
+              <div className="modal-title-group">
+                <div className="modal-icon-container">
+                  <UploadFileIcon />
+                </div>
+                <div className="modal-title-text">
+                  <h2>Manual CV Upload</h2>
+                  <p>Upload a candidate's CV for {currentJob.title}</p>
+                </div>
+              </div>
+              <button
+                onClick={closeModal}
+                className="btn-close-modal"
+                aria-label="Close modal"
+                disabled={isUploading}
+              >
+                <CloseIcon />
+              </button>
+            </div>
+            <div className="modal-form-content">
+              {uploadMessage && (
+                <div className="message-toast error" style={{ position: 'relative', top: 0, right: 0, marginBottom: '1rem', width: '100%', transform: 'none' }}>
+                  {uploadMessage}
+                </div>
+              )}
+              <div className="premium-file-upload">
+                <input
+                  type="file"
+                  onChange={handleResumeChange}
+                  className="hidden-file-input"
+                  id="hr-resume-upload"
+                  accept=".pdf,.doc,.docx"
+                />
+                <label htmlFor="hr-resume-upload" className="file-upload-label" style={{ padding: '2rem 1rem' }}>
+                  <div className="upload-icon-circle">
+                    <UploadFileIcon className="upload-icon" />
+                  </div>
+                  <span className="upload-main-text">
+                    {resumeFile ? resumeFile.name : "Click to select a CV document"}
+                  </span>
+                  <span className="upload-sub-text">
+                    PDF, DOCX up to 5MB
+                  </span>
+                </label>
+              </div>
+            </div>
+            <div className="modal-actions-premium">
+              <button
+                type="button"
+                className="btn-modal-cancel"
+                onClick={closeModal}
+                disabled={isUploading}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn-modal-primary"
+                onClick={handleUploadCV}
+                disabled={isUploading || !resumeFile}
+              >
+                {isUploading ? "Uploading & Analyzing AI..." : "+ Upload CV"}
+              </button>
+            </div>
           </div>
         </div>
       )}

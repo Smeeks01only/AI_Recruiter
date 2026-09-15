@@ -37,6 +37,7 @@ const HRApplications = () => {
   const [showModal, setShowModal] = useState(false);
   const [newStatus, setNewStatus] = useState("");
   const [stats, setStats] = useState({ total: 0, shortlisted: 0, pending: 0, rejected: 0 });
+  const [menuOpenFor, setMenuOpenFor] = useState(null);
 
   function capitalizeFirstLetter(name) {
     if (!name) return "";
@@ -123,6 +124,19 @@ const HRApplications = () => {
     } catch (error) {
       console.error("Error updating status:", error);
       alert("Failed to update status.");
+    }
+  };
+
+  const deleteApplication = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this application? This action cannot be undone.")) return;
+    try {
+      await axios.delete(`${API_BASE_URL}/api/applications/${id}/delete/`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }
+      });
+      fetchApplications();
+    } catch (err) {
+      console.error("Failed to delete application", err);
+      alert("Failed to delete application.");
     }
   };
 
@@ -247,9 +261,22 @@ const HRApplications = () => {
                         <h4>{capitalizeFirstLetter(app.applicant_first_name)} {capitalizeFirstLetter(app.applicant_last_name)}</h4>
                       </div>
                     </div>
-                    <div className="cand-status-row">
+                    <div className="cand-status-row" style={{ position: 'relative' }}>
                       <span className={`status-pill ${app.status.toLowerCase()}`}>{app.status}</span>
-                      <MoreVertIcon className="more-icon" />
+                      <MoreVertIcon 
+                        className="more-icon" 
+                        onClick={() => setMenuOpenFor(menuOpenFor === app.id ? null : app.id)} 
+                      />
+                      {menuOpenFor === app.id && (
+                        <div className="app-dropdown-menu">
+                          <button className="app-dropdown-item delete" onClick={() => {
+                            setMenuOpenFor(null);
+                            deleteApplication(app.id);
+                          }}>
+                            Delete Application
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
 

@@ -13,15 +13,28 @@ class ApplicationSerializer(serializers.ModelSerializer):
         read_only_fields = ['candidate', 'created_at', 'status']
 
     def get_applicant_name(self, obj):
-        return obj.candidate.username if obj.candidate else "Unknown"
+        if obj.candidate:
+            return obj.candidate.username
+        return obj.parsed_name or "Unknown"
     
     def get_applicant_first_name(self, obj):
-        return obj.candidate.first_name if obj.candidate else "Unknown"
+        if obj.candidate and obj.candidate.first_name:
+            return obj.candidate.first_name
+        if obj.parsed_name:
+            return obj.parsed_name.split()[0]
+        return "Unknown"
     
     def get_applicant_last_name(self, obj):
-        return obj.candidate.last_name if obj.candidate else "Unknown"
+        if obj.candidate and obj.candidate.last_name:
+            return obj.candidate.last_name
+        if obj.parsed_name:
+            parts = obj.parsed_name.split()
+            return " ".join(parts[1:]) if len(parts) > 1 else ""
+        return "Unknown"
     
     def get_applicant_email(self, obj):
-        return obj.candidate.email if obj.candidate else "Unknown"
+        if obj.candidate and obj.candidate.email:
+            return obj.candidate.email
+        return obj.parsed_email or "Unknown"
     def get_job_title(self, obj):
         return obj.job.title if obj.job else "Unknown"

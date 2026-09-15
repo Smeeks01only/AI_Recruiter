@@ -4,7 +4,7 @@ from jobs.models import Job
 from django.contrib.postgres.fields import ArrayField 
 
 class Application(models.Model):
-    candidate = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='applications')
+    candidate = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='applications', null=True, blank=True)
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='applications')
     resume = models.FileField(upload_to='resumes/')
     cover_letter = models.TextField(blank=True, null=True)
@@ -29,4 +29,5 @@ class Application(models.Model):
     ai_score = models.FloatField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.candidate.username} - {self.job.title}"
+        candidate_name = self.candidate.username if self.candidate else (self.parsed_name or "Unknown Candidate")
+        return f"{candidate_name} - {self.job.title}"

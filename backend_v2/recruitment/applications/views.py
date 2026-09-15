@@ -161,15 +161,15 @@ def update_application_status(request, pk):
         return Response({"error": "Unauthorized"}, status=status.HTTP_403_FORBIDDEN)
 
     status_value = request.data.get("status")
-    if status_value not in ["pending", "accepted", "rejected"]:
+    if status_value not in ["pending", "accepted", "rejected", "shortlisted"]:
         return Response({"error": "Invalid status"}, status=status.HTTP_400_BAD_REQUEST)
 
     app.status = status_value
     app.save()
 
     # Trigger Notification and Email
-    if status_value == 'accepted':
-        msg = f"Congratulations! Your application for {app.job.title} has been ACCEPTED."
+    if status_value in ['accepted', 'shortlisted']:
+        msg = f"Congratulations! Your application for {app.job.title} has been {status_value.upper()}."
     else:
         msg = f"Update: Your application for {app.job.title} has been {status_value.upper()}."
 
@@ -218,3 +218,75 @@ def candidate_application_stats(request):
         "applied_jobs": applied_jobs
     })
 
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def hr_upload_application(request):
+    if request.user.role != 'hr' and request.user.role != 'admin':
+        return Response({'error': 'Only HRs can upload CVs.'}, status=status.HTTP_403_FORBIDDEN)
+
+    try:
+        job = Job.objects.get(pk=request.data.get('job'))
+    except Job.DoesNotExist:
+        return Response({'error': 'Job not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    application = Application(
+        candidate=None,  # Null candidate for manual HR uploads
+        job=job,
+        resume=request.FILES.get('resume'),
+        cover_letter="Manually uploaded by HR"
+    )
+    application.save()
+
+    resume_path = application.resume.path
+    
+    # 🧠 Use the Gemini Engine for Unified Parsing and Scoring
+    job_context = {
+        "role": job.title if hasattr(job, 'title') else "Unknown",
+        "description": getattr(job, 'description', ''),
+        "required_skills": [s.strip() for s in getattr(job, 'required_skills', '').split(',') if s.strip()] if isinstance(getattr(job, 'required_skills', ''), str) else [],
+        "preferred_education": getattr(job, 'preferred_education', '')
+    }
+    
+    # Send to Gemini
+    prediction_result = process_application(resume_path, job_context)
+
+    # Save extracted resume data from Gemini
+    application.parsed_name = prediction_result.get("Name")
+    application.parsed_email = prediction_result.get("Email", "Unknown")
+    application.parsed_phone = prediction_result.get("Phone", "Unknown")
+    application.parsed_skills = prediction_result.get("Skills", [])
+    
+    # Save the new extracted fields
+    application.parsed_experience = prediction_result.get("Experience (Years)", 0)
+    application.parsed_education = prediction_result.get("Education", "Unknown")
+    application.parsed_certifications = prediction_result.get("Certifications", "None")
+    application.parsed_projects_count = prediction_result.get("Projects Count", 0)
+
+    # Save Scoring and Decisions from Gemini
+    application.recruiter_decision = prediction_result.get('Recruiter Decision', 'Reject')
+    application.ai_score = prediction_result.get('AI Score', 0.0)
+    application.match_explanation = prediction_result.get('Explanation', ['Error evaluating candidate.'])
+    
+    application.save()
+
+    serializer = ApplicationSerializer(application)
+    return Response({
+        "application": serializer.data,
+        "compliance": prediction_result.get("Compliance", {})
+    }, status=status.HTTP_201_CREATED)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_application(request, pk):
+    try:
+        app = Application.objects.get(pk=pk)
+    except Application.DoesNotExist:
+        return Response({"error": "Application not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.user.role != 'hr' and request.user.role != 'admin':
+        return Response({"error": "Unauthorized"}, status=status.HTTP_403_FORBIDDEN)
+
+    app.delete()
+    return Response({"message": "Application deleted successfully"}, status=status.HTTP_204_NO_CONTENT)

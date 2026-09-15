@@ -30,6 +30,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure--1!p9t0#u84b4h#v*y^!2
 
 # Gemini API Key
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', None)
+GROQ_API_KEY = os.environ.get('GROQ_API_KEY', '')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'

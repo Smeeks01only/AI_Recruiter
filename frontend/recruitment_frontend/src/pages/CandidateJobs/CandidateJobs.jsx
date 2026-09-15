@@ -35,7 +35,7 @@ const CandidateJobs = () => {
   const appliedJobIds = applications.map((app) => app.job); // assuming app.job is the job ID
   const availableJobs = jobs.filter((job) => {
     const matchesSearch = job.title.toLowerCase().includes(searchQuery) || job.company.toLowerCase().includes(searchQuery) || job.description.toLowerCase().includes(searchQuery);
-    return !appliedJobIds.includes(job.id) && job.is_active && matchesSearch;
+    return job.is_active && matchesSearch;
   });
 
   useEffect(() => {
@@ -227,12 +227,18 @@ const CandidateJobs = () => {
                   {job.description.substring(0, 150)}...
                 </p>
                 <div className="job-card-footer">
-                  <button
-                    className="apply-btn"
-                    onClick={() => openApplyModal(job)}
-                  >
-                    Apply Now
-                  </button>
+                  {appliedJobIds.includes(job.id) ? (
+                    <button className="apply-btn" disabled style={{ backgroundColor: '#94a3b8', cursor: 'not-allowed' }}>
+                      Already Applied
+                    </button>
+                  ) : (
+                    <button
+                      className="apply-btn"
+                      onClick={() => openApplyModal(job)}
+                    >
+                      Apply Now
+                    </button>
+                  )}
                 </div>
               </div>
             ))

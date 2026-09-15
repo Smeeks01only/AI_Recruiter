@@ -749,3 +749,44 @@
   background-color: var(--primary-dark);
   transform: translateY(-1px);
 }
+
+/* App Card Dropdown Menu */
+.app-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  min-width: 150px;
+  overflow: hidden;
+  animation: fadeIn 0.15s ease-in-out;
+}
+
+.app-dropdown-item {
+  width: 100%;
+  text-align: left;
+  padding: 0.7rem 1rem;
+  background: none;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--dark-text);
+  transition: background-color 0.2s;
+}
+
+.app-dropdown-item:hover {
+  background-color: #f1f5f9;
+}
+
+.app-dropdown-item.delete {
+  color: #dc2626;
+}
+
+.app-dropdown-item.delete:hover {
+  background-color: #fee2e2;
+}
