@@ -41,7 +41,7 @@ const DashboardHR = () => {
   const [message, setMessage] = useState({ text: "", type: "" }); // type can be 'success' or 'error'
   const [isLoading, setIsLoading] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [resumeFile, setResumeFile] = useState(null);
+  const [resumeFiles, setResumeFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadMessage, setUploadMessage] = useState("");
 
@@ -245,49 +245,67 @@ const DashboardHR = () => {
     setShowUploadModal(false);
     resetFormData();
     setCurrentJob(null);
-    setResumeFile(null);
+    setResumeFiles([]);
     setUploadMessage("");
   };
 
   const openUploadModal = (job) => {
     setCurrentJob(job);
-    setResumeFile(null);
+    setResumeFiles([]);
     setUploadMessage("");
     setShowUploadModal(true);
   };
 
   const handleResumeChange = (e) => {
-    setResumeFile(e.target.files[0]);
+    setResumeFiles(Array.from(e.target.files));
   };
 
   const handleUploadCV = async () => {
-    if (!resumeFile) {
-      setUploadMessage("Please select a PDF resume to upload.");
+    if (!resumeFiles || resumeFiles.length === 0) {
+      setUploadMessage("Please select at least one CV to upload.");
       return;
     }
     setIsUploading(true);
     setUploadMessage("");
 
-    const form = new FormData();
-    form.append("job", currentJob.id);
-    form.append("resume", resumeFile);
+    let successCount = 0;
+    let failCount = 0;
+    let errorDetails = [];
 
-    try {
-      await axios.post(`${API_URL}/applications/hr-upload/`, form, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      displayMessage("CV uploaded and parsed successfully!", "success");
+    for (let i = 0; i < resumeFiles.length; i++) {
+      const file = resumeFiles[i];
+      setUploadMessage(`Processing CV ${i + 1} of ${resumeFiles.length}: ${file.name}...`);
+      
+      const form = new FormData();
+      form.append("job", currentJob.id);
+      form.append("resume", file);
+
+      try {
+        await axios.post(`${API_URL}/applications/hr-upload/`, form, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        successCount++;
+      } catch (err) {
+        console.error(`Error uploading ${file.name}:`, err);
+        failCount++;
+        const errMsg = err.response?.data?.error || err.response?.data?.detail || err.message || "Unknown error";
+        errorDetails.push(`• ${file.name}: ${errMsg}`);
+      }
+    }
+
+    setIsUploading(false);
+    
+    if (failCount === 0) {
+      displayMessage(`Successfully uploaded and parsed all ${successCount} CV(s)!`, "success");
       setShowUploadModal(false);
-      setResumeFile(null);
+      setResumeFiles([]);
       setCurrentJob(null);
-    } catch (err) {
-      console.error("Upload CV error:", err);
-      setUploadMessage(err.response?.data?.error || err.response?.data?.detail || "Failed to upload CV. Please try again.");
-    } finally {
-      setIsUploading(false);
+    } else {
+      const summary = `Finished processing.\n✅ ${successCount} succeeded\n❌ ${failCount} failed\n\nErrors:\n${errorDetails.join('\n')}`;
+      setUploadMessage(summary);
     }
   };
 
@@ -672,13 +690,17 @@ const DashboardHR = () => {
             </div>
             <div className="modal-form-content">
               {uploadMessage && (
-                <div className="message-toast error" style={{ position: 'relative', top: 0, right: 0, marginBottom: '1rem', width: '100%', transform: 'none' }}>
+                <div 
+                  className={`message-toast ${uploadMessage.includes("Processing CV") ? "info" : "error"}`} 
+                  style={{ position: 'relative', top: 0, right: 0, marginBottom: '1rem', width: '100%', transform: 'none', whiteSpace: 'pre-wrap', textAlign: 'left', maxHeight: '150px', overflowY: 'auto' }}
+                >
                   {uploadMessage}
                 </div>
               )}
               <div className="premium-file-upload">
                 <input
                   type="file"
+                  multiple
                   onChange={handleResumeChange}
                   className="hidden-file-input"
                   id="hr-resume-upload"
@@ -689,7 +711,9 @@ const DashboardHR = () => {
                     <UploadFileIcon className="upload-icon" />
                   </div>
                   <span className="upload-main-text">
-                    {resumeFile ? resumeFile.name : "Click to select a CV document"}
+                    {resumeFiles.length > 0 
+                      ? `${resumeFiles.length} file(s) selected` 
+                      : "Click to select CV documents (You can select multiple)"}
                   </span>
                   <span className="upload-sub-text">
                     PDF, DOCX up to 5MB

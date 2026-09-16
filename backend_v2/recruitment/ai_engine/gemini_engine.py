@@ -78,6 +78,9 @@ Job Description: {job_context.get('description', '')}
    - "Experience (Years)" must be a float.
    - "Projects Count" must be an integer.
 2. Evaluate the candidate against the Job Context and generate an 'AI Score' from 0 to 100.
+   - **STRICT EDUCATION SCORING**: You must be extremely strict regarding the 'Preferred Education' and qualifications. 
+   - If a candidate does NOT meet the specific education requirements, you must heavily penalize their score (they must NOT receive a high score).
+   - **DEGREE EQUIVALENCY RULE**: An MBA is a business degree and MUST NOT be considered equal to an MSc in IT, Computer Science, or any related technical field. Do not give technical education credit for business degrees.
 3. Provide a 'Recruiter Decision' which must be strictly "Shortlist" (score >= 60) or "Reject" (score < 60).
 4. Provide a 3-sentence 'Explanation' explaining exactly why they received this score.
 
