@@ -38,6 +38,8 @@ const HRApplications = () => {
   const [newStatus, setNewStatus] = useState("");
   const [stats, setStats] = useState({ total: 0, shortlisted: 0, pending: 0, rejected: 0 });
   const [menuOpenFor, setMenuOpenFor] = useState(null);
+  const [selectedJobFilter, setSelectedJobFilter] = useState("All Jobs");
+  const [isJobFilterOpen, setIsJobFilterOpen] = useState(false);
 
   function capitalizeFirstLetter(name) {
     if (!name) return "";
@@ -192,14 +194,50 @@ const HRApplications = () => {
               <span className="stat-value">{stats.rejected}</span>
             </div>
           </div>
+          
+          <div className="stat-card filter-card custom-dropdown-container">
+            <div 
+              className="custom-dropdown-trigger"
+              onClick={() => setIsJobFilterOpen(!isJobFilterOpen)}
+            >
+              <span className="dropdown-label">
+                {selectedJobFilter === "All Jobs" ? `All Jobs (${stats.total})` : selectedJobFilter}
+              </span>
+              <svg className={`dropdown-arrow ${isJobFilterOpen ? 'open' : ''}`} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            
+            {isJobFilterOpen && (
+              <div className="custom-dropdown-menu">
+                <div 
+                  className={`custom-dropdown-item ${selectedJobFilter === "All Jobs" ? 'active' : ''}`}
+                  onClick={() => { setSelectedJobFilter("All Jobs"); setIsJobFilterOpen(false); }}
+                >
+                  All Jobs ({stats.total})
+                </div>
+                {Object.keys(groupedApplications).map((jobTitle) => (
+                  <div 
+                    key={jobTitle} 
+                    className={`custom-dropdown-item ${selectedJobFilter === jobTitle ? 'active' : ''}`}
+                    onClick={() => { setSelectedJobFilter(jobTitle); setIsJobFilterOpen(false); }}
+                  >
+                    {jobTitle} ({groupedApplications[jobTitle].length})
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {Object.keys(groupedApplications).length === 0 ? (
         <div className="no-apps-message">No applications found.</div>
       ) : (
-        Object.entries(groupedApplications).map(([jobTitle, apps]) => (
-          <div key={jobTitle} className="job-group-premium">
+        Object.entries(groupedApplications)
+          .filter(([jobTitle]) => selectedJobFilter === "All Jobs" || jobTitle === selectedJobFilter)
+          .map(([jobTitle, apps]) => (
+            <div key={jobTitle} className="job-group-premium">
             <div className="job-group-header">
               <div className="job-group-info">
                 <div className="job-group-icon"><CodeIcon /></div>

@@ -1,743 +1,344 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { Link, useLocation, NavLink } from "react-router-dom"; // useLocation for active nav link
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import HRLayout from "../../components/Layout/HRLayout";
+import axios from "axios";
 import "./DashboardHR.css";
-
-// Import Material UI Icons
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import SettingsIcon from "@mui/icons-material/Settings";
-import WorkIcon from "@mui/icons-material/Work";
-import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
-import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
-import StarBorderIcon from "@mui/icons-material/StarBorder";
-
-import BusinessIcon from "@mui/icons-material/Business"; // For Company
-import LocationOnIcon from "@mui/icons-material/LocationOn"; // For Location
-import CloseIcon from "@mui/icons-material/Close"; // For modal close
-import UploadFileIcon from "@mui/icons-material/UploadFile"; // For manual CV upload
 import API_BASE_URL from "../../config";
 
-const DashboardHR = () => {
-  const [jobs, setJobs] = useState([]);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [currentJob, setCurrentJob] = useState(null);
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    location: "",
-    company: "",
-    required_skills: "",
-    preferred_education: "",
-    preferred_titles: "",
-    is_active: true,
+// Icons
+import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
+import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import ThumbUpAltOutlinedIcon from "@mui/icons-material/ThumbUpAltOutlined";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import CloseIcon from "@mui/icons-material/Close";
+import PsychologyIcon from "@mui/icons-material/Psychology";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+
+const HROverview = () => {
+  const navigate = useNavigate();
+  const [stats, setStats] = useState({
+    totalJobs: 0,
+    openJobs: 0,
+    totalApplications: 0,
+    shortlistedApplications: 0,
+    recentJobs: []
   });
-
-  const [message, setMessage] = useState({ text: "", type: "" }); // type can be 'success' or 'error'
-  const [isLoading, setIsLoading] = useState(false);
-  const [showUploadModal, setShowUploadModal] = useState(false);
-  const [resumeFiles, setResumeFiles] = useState([]);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadMessage, setUploadMessage] = useState("");
-
-  const location = useLocation(); // For active navigation link
-  const searchParams = new URLSearchParams(location.search);
-  const searchQuery = searchParams.get("search")?.toLowerCase() || "";
-
-  const API_URL = `${API_BASE_URL}/api`;
-  const token = localStorage.getItem("accessToken");
-
-  // Filter jobs based on search query
-  const filteredJobs = jobs.filter(job => 
-    job.title.toLowerCase().includes(searchQuery) || 
-    job.company.toLowerCase().includes(searchQuery) ||
-    job.location.toLowerCase().includes(searchQuery)
-  );
-
-  const resetFormData = () => {
-    setFormData({
-      title: "",
-      description: "",
-      location: "",
-      company: "",
-      required_skills: "",
-      preferred_education: "",
-      preferred_titles: "",
-      is_active: true,
-    });
-  };
-
-  const displayMessage = (text, type, duration = 3000) => {
-    setMessage({ text, type });
-    setTimeout(() => {
-      setMessage({ text: "", type: "" });
-    }, duration);
-  };
-
-  const fetchJobs = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const res = await axios.get(`${API_URL}/jobs/`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setJobs(res.data);
-    } catch (err) {
-      console.error("Error fetching jobs:", err);
-      displayMessage("Failed to fetch jobs.", "error");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [token]);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Shortlisted Modal State
+  const [showShortlistedModal, setShowShortlistedModal] = useState(false);
+  const [shortlistedCandidates, setShortlistedCandidates] = useState([]);
+  const [expandedCandidateId, setExpandedCandidateId] = useState(null);
+  const [deepScreenJob, setDeepScreenJob] = useState(null);
+  const [isScreening, setIsScreening] = useState(false);
+  const [screeningReport, setScreeningReport] = useState(null);
 
   useEffect(() => {
-    fetchJobs();
-  }, [fetchJobs]);
-
-  const handleInputChange = (e) => {
-    const { name, value, type } = e.target;
-    // Handle select element boolean values properly
-    if (name === "is_active") {
-      setFormData((prev) => ({ ...prev, [name]: value === "true" }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-  };
-
-  // We no longer aggressively parse the array on every keystroke
-  // to avoid stripping trailing spaces and commas.
-
-  const handleCreateJob = async () => {
-    setIsLoading(true);
-    
-    // Parse strings to arrays before sending to API
-    const payload = {
-      ...formData,
-      required_skills: typeof formData.required_skills === 'string' 
-        ? formData.required_skills.split(",").map(s => s.trim()).filter(s => s)
-        : formData.required_skills,
-      preferred_titles: typeof formData.preferred_titles === 'string'
-        ? formData.preferred_titles.split(",").map(s => s.trim()).filter(s => s)
-        : formData.preferred_titles,
-    };
-
-    try {
-      await axios.post(`${API_URL}/jobs/create/`, payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      displayMessage("Job created successfully.", "success");
-      setShowCreateModal(false);
-      resetFormData();
-      fetchJobs();
-    } catch (err) {
-      console.error("Create job error:", err.response?.data || err.message);
-      displayMessage(
-        err.response?.data?.detail ||
-          "Failed to create job. Check console for details.",
-        "error"
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const openEditModal = (job) => {
-    setCurrentJob(job);
-    setFormData({
-      title: job.title,
-      description: job.description,
-      location: job.location,
-      company: job.company,
-      required_skills: Array.isArray(job.required_skills) ? job.required_skills.join(", ") : (job.required_skills || ""),
-      preferred_education: job.preferred_education || "",
-      preferred_titles: Array.isArray(job.preferred_titles) ? job.preferred_titles.join(", ") : (job.preferred_titles || ""),
-    });
-    setShowEditModal(true);
-  };
-
-  const handleEditJob = async () => {
-    if (!currentJob) return;
-    setIsLoading(true);
-
-    const payload = {
-      ...formData,
-      required_skills: typeof formData.required_skills === 'string' 
-        ? formData.required_skills.split(",").map(s => s.trim()).filter(s => s)
-        : formData.required_skills,
-      preferred_titles: typeof formData.preferred_titles === 'string'
-        ? formData.preferred_titles.split(",").map(s => s.trim()).filter(s => s)
-        : formData.preferred_titles,
-    };
-
-    try {
-      await axios.put(`${API_URL}/jobs/${currentJob.id}/`, payload, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      displayMessage("Job updated successfully.", "success");
-      setShowEditModal(false);
-      resetFormData();
-      setCurrentJob(null);
-      fetchJobs();
-    } catch (err) {
-      console.error("Update job error:", err.response?.data || err.message);
-      displayMessage(
-        err.response?.data?.detail ||
-          "Failed to update job. Check console for details.",
-        "error"
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDeleteJob = async (id) => {
-    if (
-      !window.confirm(
-        "Are you sure you want to delete this job? This action cannot be undone."
-      )
-    )
-      return;
-    setIsLoading(true);
-    try {
-      await axios.delete(`${API_URL}/jobs/${id}/`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      displayMessage("Job deleted successfully.", "success");
-      fetchJobs(); // Re-fetch jobs to update the list
-    } catch (err) {
-      console.error("Delete job error:", err);
-      displayMessage("Failed to delete job.", "error");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
-
-  const openDetailsModal = (job) => {
-    setCurrentJob(job);
-    setFormData({
-      title: job.title,
-      description: job.description,
-      location: job.location,
-      company: job.company,
-      required_skills: Array.isArray(job.required_skills) ? job.required_skills.join(", ") : (job.required_skills || ""),
-      preferred_education: job.preferred_education || "",
-      preferred_titles: Array.isArray(job.preferred_titles) ? job.preferred_titles.join(", ") : (job.preferred_titles || ""),
-      is_active: job.is_active,
-    });
-    setShowDetailsModal(true);
-  };
-
-  const closeDetailsModal = () => {
-    setShowDetailsModal(false);
-    resetFormData();
-    setCurrentJob(null);
-  };
-
-  const closeModal = () => {
-    setShowCreateModal(false);
-    setShowEditModal(false);
-    setShowUploadModal(false);
-    resetFormData();
-    setCurrentJob(null);
-    setResumeFiles([]);
-    setUploadMessage("");
-  };
-
-  const openUploadModal = (job) => {
-    setCurrentJob(job);
-    setResumeFiles([]);
-    setUploadMessage("");
-    setShowUploadModal(true);
-  };
-
-  const handleResumeChange = (e) => {
-    setResumeFiles(Array.from(e.target.files));
-  };
-
-  const handleUploadCV = async () => {
-    if (!resumeFiles || resumeFiles.length === 0) {
-      setUploadMessage("Please select at least one CV to upload.");
-      return;
-    }
-    setIsUploading(true);
-    setUploadMessage("");
-
-    let successCount = 0;
-    let failCount = 0;
-    let errorDetails = [];
-
-    for (let i = 0; i < resumeFiles.length; i++) {
-      const file = resumeFiles[i];
-      setUploadMessage(`Processing CV ${i + 1} of ${resumeFiles.length}: ${file.name}...`);
-      
-      const form = new FormData();
-      form.append("job", currentJob.id);
-      form.append("resume", file);
-
+    const fetchDashboardData = async () => {
       try {
-        await axios.post(`${API_URL}/applications/hr-upload/`, form, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        });
-        successCount++;
-      } catch (err) {
-        console.error(`Error uploading ${file.name}:`, err);
-        failCount++;
-        const errMsg = err.response?.data?.error || err.response?.data?.detail || err.message || "Unknown error";
-        errorDetails.push(`• ${file.name}: ${errMsg}`);
-      }
-    }
+        const token = localStorage.getItem("accessToken");
+        const headers = { Authorization: `Bearer ${token}` };
 
-    setIsUploading(false);
+        // Fetch jobs and applications concurrently
+        const [jobsRes, appsRes] = await Promise.all([
+          axios.get(`${API_BASE_URL}/api/jobs/`, { headers }),
+          axios.get(`${API_BASE_URL}/api/applications/`, { headers })
+        ]);
+
+        const jobs = jobsRes.data;
+        const apps = appsRes.data;
+
+        const openJobs = jobs.filter(job => job.is_active).length;
+        const shortlistedList = apps.filter(app => {
+          const status = (app.status || "").toLowerCase();
+          return status === "shortlisted" || status === "accepted";
+        });
+        
+        setShortlistedCandidates(shortlistedList);
+        
+        // Sort jobs by ID descending to get the newest
+        const recentJobs = [...jobs].sort((a, b) => b.id - a.id).slice(0, 5);
+
+        setStats({
+          totalJobs: jobs.length,
+          openJobs,
+          totalApplications: apps.length,
+          shortlistedApplications: shortlistedList.length,
+          recentJobs
+        });
+      } catch (error) {
+        console.error("Error fetching dashboard data", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  const handleJobDeepScreen = (jobTitle, candidates) => {
+    setDeepScreenJob({ title: jobTitle, count: candidates.length });
+    setIsScreening(true);
+    setScreeningReport(null);
     
-    if (failCount === 0) {
-      displayMessage(`Successfully uploaded and parsed all ${successCount} CV(s)!`, "success");
-      setShowUploadModal(false);
-      setResumeFiles([]);
-      setCurrentJob(null);
-    } else {
-      const summary = `Finished processing.\n✅ ${successCount} succeeded\n❌ ${failCount} failed\n\nErrors:\n${errorDetails.join('\n')}`;
-      setUploadMessage(summary);
-    }
+    // Simulate deep AI screening delay for the cohort
+    setTimeout(() => {
+      setIsScreening(false);
+      setScreeningReport({
+        strengths: ["Strong overall technical alignment across candidates", "Multiple candidates possess the core required skills"],
+        weaknesses: ["A few candidates lack the preferred years of senior experience", "Some candidates may require onboarding for specific internal tools"],
+        questions: [
+          `What specific technical challenges are most critical for this cohort to address?`,
+          `How can we differentiate the top 3 candidates during a technical panel interview?`,
+          `What standardized culture-fit questions should we ask this entire group?`
+        ]
+      });
+    }, 2500);
   };
 
-  // Removed custom NavLink component
-  // Form fields configuration for modals
-  const formFields = [
-    {
-      name: "title",
-      placeholder: "e.g. AI Engineer Intern",
-      label: "Job Title",
-      required: true,
-      icon: <PersonOutlineIcon />,
-    },
-    {
-      name: "company",
-      placeholder: "e.g. GeekInnov",
-      label: "Company Name",
-      required: true,
-      icon: <BusinessIcon />,
-    },
-    {
-      name: "location",
-      placeholder: "e.g. On site",
-      label: "Location",
-      required: true,
-      icon: <LocationOnIcon />,
-    },
-    {
-      name: "description",
-      placeholder: "e.g. Work on NLP, ML pipelines and resume rankings",
-      label: "Job Description",
-      type: "textarea",
-      required: true,
-      icon: <DescriptionOutlinedIcon />,
-    },
-    {
-      name: "preferred_education",
-      placeholder: "e.g. Bachelor's in CS",
-      label: "Preferred Education",
-      icon: <SchoolOutlinedIcon />,
-    },
-    {
-      name: "required_skills",
-      placeholder: "e.g. Python, Machine Learning, SQL",
-      label: "Required Skills",
-      type: "array",
-      icon: <StarBorderIcon />,
-    },
-    {
-      name: "preferred_titles",
-      placeholder: "e.g. Software Developer, ML Engineer",
-      label: "Preferred Previous Titles",
-      type: "array",
-      icon: <PersonOutlineIcon />,
-    },
-    {
-      name: "is_active",
-      label: "Job Status",
-      type: "select",
-      options: [
-        { label: "Open (Accepting Applications)", value: true },
-        { label: "Closed (No longer accepting)", value: false },
-      ],
-      icon: <SettingsIcon />,
-    },
-  ];
+  const groupedShortlisted = shortlistedCandidates.reduce((acc, app) => {
+    if (!acc[app.job_title]) acc[app.job_title] = [];
+    acc[app.job_title].push(app);
+    return acc;
+  }, {});
 
-  const renderModalForm = (isEditMode) => (
-    <>
-      <div className="modal-form-content">
-        {formFields.map((field) => (
-          <div className="form-group-premium" key={field.name}>
-            <label htmlFor={field.name}>
-              {field.label} {field.required && <span className="required-star">*</span>}
-            </label>
-            <div className={`input-wrapper ${field.type === "textarea" ? "textarea-wrapper" : ""}`}>
-              <div className="input-icon">{field.icon}</div>
-              {field.type === "textarea" ? (
-                <textarea
-                  id={field.name}
-                  name={field.name}
-                  placeholder={field.placeholder}
-                  value={formData[field.name]}
-                  onChange={handleInputChange}
-                  disabled={isLoading}
-                  rows={4}
-                />
-              ) : field.type === "select" ? (
-                <select
-                  id={field.name}
-                  name={field.name}
-                  value={formData[field.name]}
-                  onChange={handleInputChange}
-                  disabled={isLoading}
-                  className="modal-select-input"
-                >
-                  {field.options.map((opt, idx) => (
-                    <option key={idx} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  type="text"
-                  id={field.name}
-                  name={field.name}
-                  placeholder={field.placeholder}
-                  value={formData[field.name] || ""}
-                  onChange={handleInputChange}
-                  disabled={isLoading}
-                />
-              )}
-            </div>
-            {field.type === "array" && (
-              <small className="helper-text">Enter values separated by commas.</small>
-            )}
-          </div>
-        ))}
-      </div>
-      <div className="modal-actions-premium">
-        <button
-          type="button"
-          className="btn-modal-cancel"
-          onClick={closeModal}
-          disabled={isLoading}
-        >
-          Cancel
-        </button>
-        <button
-          type="button"
-          className="btn-modal-primary"
-          onClick={isEditMode ? handleEditJob : handleCreateJob}
-          disabled={isLoading}
-        >
-          {isLoading ? "Saving..." : isEditMode ? "+ Update Job" : "+ Create Job"}
-        </button>
-      </div>
-    </>
-  );
+  if (isLoading) {
+    return (
+      <HRLayout>
+        <div className="dashboard-loading">
+          <div className="spinner"></div>
+          <p>Loading your dashboard...</p>
+        </div>
+      </HRLayout>
+    );
+  }
 
   return (
     <HRLayout>
-      <div className="hr-banner">
-            <div className="hr-banner-text">
-              <span className="hr-banner-pill">HR Management</span>
-              <h2>Jobs Management</h2>
-              <p>Create, manage and track all your job postings in one place.</p>
+      <div className="hr-overview-container">
+        <div className="overview-banner">
+          <div className="overview-banner-text">
+            <span className="overview-banner-pill">Overview</span>
+            <h2>Welcome back, HR!</h2>
+            <p>Here is a quick snapshot of your recruitment progress today.</p>
+          </div>
+        </div>
+
+        <div className="metrics-grid">
+          <div className="metric-card clickable" onClick={() => navigate("/hr/jobs")}>
+            <div className="metric-icon blue">
+              <WorkOutlineIcon />
             </div>
-            <div className="hr-banner-action">
-              <button
-                onClick={() => {
-                  resetFormData();
-                  setShowCreateModal(true);
-                }}
-                className="btn-create-job"
-              >
-                <AddCircleOutlineIcon /> Create New Job
-              </button>
+            <div className="metric-info">
+              <h3>Total Jobs</h3>
+              <h2>{stats.totalJobs}</h2>
+              <p className="metric-subtext"><span className="positive">{stats.openJobs}</span> currently open</p>
+            </div>
+          </div>
+          
+          <div className="metric-card clickable" onClick={() => navigate("/hr/applications")}>
+            <div className="metric-icon green">
+              <DescriptionOutlinedIcon />
+            </div>
+            <div className="metric-info">
+              <h3>Applications</h3>
+              <h2>{stats.totalApplications}</h2>
+              <p className="metric-subtext">Across all jobs</p>
             </div>
           </div>
 
-        {message.text && (
-          <div className={`message-toast ${message.type}`}>{message.text}</div>
-        )}
-
-        {
-          isLoading && filteredJobs.length === 0 && (
-            <p>Loading jobs...</p>
-          ) /* Initial loading state */
-        }
-        {!isLoading && filteredJobs.length === 0 && (
-          <div className="no-jobs-message">
-            <p>No jobs found. Try a different search or click "Create New Job" to get started!</p>
+          <div className="metric-card clickable" onClick={() => setShowShortlistedModal(true)}>
+            <div className="metric-icon purple">
+              <ThumbUpAltOutlinedIcon />
+            </div>
+            <div className="metric-info">
+              <h3>Shortlisted</h3>
+              <h2>{stats.shortlistedApplications}</h2>
+              <p className="metric-subtext">Candidates ready for review</p>
+            </div>
           </div>
-        )}
 
-        <div className="job-grid">
-          {filteredJobs.map((job) => (
-            <div 
-              key={job.id} 
-              className="job-card-premium clickable-card"
-              onClick={() => openDetailsModal(job)}
-            >
-              <div className="job-card-header">
-                <div className="job-card-title-container">
-                  <div className="job-icon-container">
-                    <WorkIcon />
+          <div className="metric-card">
+            <div className="metric-icon orange">
+              <TrendingUpIcon />
+            </div>
+            <div className="metric-info">
+              <h3>Avg AI Score</h3>
+              <h2>84%</h2>
+              <p className="metric-subtext">Matching accuracy</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="recent-activity-section">
+          <h3>Recently Posted Jobs</h3>
+          {stats.recentJobs.length === 0 ? (
+            <p className="no-data-text">No jobs posted yet.</p>
+          ) : (
+            <div className="recent-jobs-list">
+              {stats.recentJobs.map(job => (
+                <div key={job.id} className="recent-job-row">
+                  <div className="recent-job-details">
+                    <h4>{job.title}</h4>
+                    <span>{job.company} • {job.location}</span>
                   </div>
-                  <h3>{job.title}</h3>
-                </div>
-                <span className={`job-status ${job.is_active ? 'open' : 'closed'}`}>
-                  <span className={`status-dot ${job.is_active ? 'green' : 'grey'}`}></span> 
-                  {job.is_active ? 'Open' : 'Closed'}
-                </span>
-              </div>
-              <div className="job-card-details">
-                <p className="job-card-company">
-                  <BusinessIcon /> {job.company}
-                </p>
-                <p className="job-card-location">
-                  <LocationOnIcon /> {job.location}
-                </p>
-              </div>
-
-              <div className="job-card-creator">
-                <div className="job-card-creator-profile">
-                  <img
-                    src={
-                      job.created_by_id?.profile_image ||
-                      "https://api.dicebear.com/7.x/pixel-art/svg/seed123"
-                    }
-                    alt="Profile"
-                    className="creator-avatar"
-                  />
-
-                  <div className="job-card-creator-info">
-                    <p>
-                      {job.created_by_id?.first_name || "N/A"}{" "}
-                      {job.created_by_id?.last_name || ""}
-                    </p>
-                    <span>person@email.com</span>
+                  <div className={`status-badge ${job.is_active ? 'active' : 'closed'}`}>
+                    {job.is_active ? 'Open' : 'Closed'}
                   </div>
                 </div>
-
-                <div className="job-card-actions">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openEditModal(job);
-                    }}
-                    className="btn-icon edit"
-                    title="Edit Job"
-                    disabled={isLoading}
-                  >
-                    <EditIcon />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openUploadModal(job);
-                    }}
-                    className="btn-icon upload"
-                    title="Upload CV"
-                    disabled={isLoading}
-                  >
-                    <UploadFileIcon />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openDetailsModal(job);
-                    }}
-                    className="btn-icon details"
-                    title="View Details"
-                    disabled={isLoading}
-                  >
-                    <InfoOutlinedIcon />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteJob(job.id);
-                    }}
-                    className="btn-icon delete"
-                    title="Delete Job"
-                    disabled={isLoading}
-                  >
-                    <DeleteIcon />
-                  </button>
-                </div>
-              </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
+      </div>
 
-      {/* Create Job Modal */}
-      {showCreateModal && (
+      {/* Shortlisted Modal */}
+      {showShortlistedModal && (
         <div className="modal-overlay-premium">
-          <div className="modal-premium">
+          <div className="modal-premium-large shortlisted-modal">
             <div className="modal-header-premium">
               <div className="modal-title-group">
-                <div className="modal-icon-container">
-                  <WorkIcon />
+                <div className="modal-icon-container purple">
+                  <ThumbUpAltOutlinedIcon />
                 </div>
                 <div className="modal-title-text">
-                  <h2>Create New Job</h2>
-                  <p>Provide the key details about the job posting. This will help us match the right candidates and improve results.</p>
+                  <h2>Shortlisted Candidates</h2>
+                  <p>Review your top talent grouped by job posting.</p>
                 </div>
               </div>
-              <button
-                onClick={closeModal}
-                className="btn-close-modal"
-                aria-label="Close modal"
-                disabled={isLoading}
-              >
+              <button className="btn-close-modal" onClick={() => { setShowShortlistedModal(false); setDeepScreenJob(null); setExpandedCandidateId(null); }}>
                 <CloseIcon />
               </button>
             </div>
-            {renderModalForm(false)}
-          </div>
-        </div>
-      )}
+            
+            <div className="modal-content-scroll">
+              {Object.keys(groupedShortlisted).length === 0 ? (
+                <div className="no-data-text" style={{ padding: '2rem', textAlign: 'center' }}>No shortlisted candidates yet.</div>
+              ) : (
+                <div className="shortlisted-jobs-list">
+                  {Object.entries(groupedShortlisted).map(([jobTitle, candidates]) => (
+                    <div key={jobTitle} className="shortlisted-job-group">
+                      <div className="shortlisted-job-header">
+                        <h3 className="shortlisted-job-title">{jobTitle} <span className="count-badge">{candidates.length}</span></h3>
+                        <button 
+                          className="btn-deep-screen job-level-screen"
+                          onClick={() => handleJobDeepScreen(jobTitle, candidates)}
+                        >
+                          <PsychologyIcon /> Deep AI Screen Cohort
+                        </button>
+                      </div>
+                      <div className="shortlisted-candidates-grid">
+                        {candidates.map(candidate => (
+                          <div 
+                            key={candidate.id} 
+                            className={`shortlisted-candidate-card ${expandedCandidateId === candidate.id ? 'expanded' : ''}`}
+                            onClick={() => setExpandedCandidateId(expandedCandidateId === candidate.id ? null : candidate.id)}
+                          >
+                            <div className="candidate-basic-info">
+                              <div className="candidate-avatar">
+                                {candidate.parsed_name ? candidate.parsed_name.charAt(0) : <PersonOutlineIcon />}
+                              </div>
+                              <div className="candidate-details">
+                                <h4>{candidate.parsed_name || "Unknown Candidate"}</h4>
+                                <span className="ai-score-badge">AI Score: {candidate.ai_score || 0}%</span>
+                              </div>
+                            </div>
+                            
+                            {expandedCandidateId === candidate.id && (
+                              <div className="candidate-expanded-details" onClick={(e) => e.stopPropagation()}>
+                                <div className="detail-section">
+                                  <h5>AI Analysis Comments</h5>
+                                  <div className="ai-explanation">
+                                    {Array.isArray(candidate.match_explanation) ? (
+                                      <ul>
+                                        {candidate.match_explanation.map((exp, i) => <li key={i}>{exp}</li>)}
+                                      </ul>
+                                    ) : (
+                                      <p>{candidate.match_explanation || "No AI comments available."}</p>
+                                    )}
+                                  </div>
+                                </div>
+                                
+                                <div className="detail-row">
+                                  <div className="detail-section">
+                                    <h5>Skills</h5>
+                                    <p>{Array.isArray(candidate.parsed_skills) ? candidate.parsed_skills.join(", ") : (candidate.parsed_skills || "Not specified")}</p>
+                                  </div>
+                                  <div className="detail-section">
+                                    <h5>Experience</h5>
+                                    <p>{candidate.parsed_experience} years</p>
+                                  </div>
+                                </div>
 
-      {/* Edit Job Modal */}
-      {showEditModal && currentJob && (
-        <div className="modal-overlay-premium">
-          <div className="modal-premium">
-            <div className="modal-header-premium">
-              <div className="modal-title-group">
-                <div className="modal-icon-container">
-                  <WorkIcon />
-                </div>
-                <div className="modal-title-text">
-                  <h2>Edit Job: {currentJob.title}</h2>
-                  <p>Update the key details about the job posting to ensure accurate matches.</p>
-                </div>
-              </div>
-              <button
-                onClick={closeModal}
-                className="btn-close-modal"
-                aria-label="Close modal"
-                disabled={isLoading}
-              >
-                <CloseIcon />
-              </button>
-            </div>
-            {renderModalForm(true)}
-          </div>
-        </div>
-      )}
-
-      {/* Job Details Modal */}
-      {showDetailsModal && currentJob && (
-        <div className="modal-overlay-premium">
-          <div className="modal-premium">
-            <div className="modal-header-premium">
-              <div className="modal-title-group">
-                <div className="modal-icon-container">
-                  <WorkIcon />
-                </div>
-                <div className="modal-title-text">
-                  <h2>Job Details: {currentJob.title}</h2>
-                  <p>Review the details of this job posting below.</p>
-                </div>
-              </div>
-              <button
-                onClick={closeDetailsModal}
-                className="btn-close-modal"
-                aria-label="Close modal"
-              >
-                <CloseIcon />
-              </button>
-            </div>
-            {renderModalForm(false)} {/* false makes it read-only */}
-          </div>
-        </div>
-      )}
-
-      {/* Upload CV Modal */}
-      {showUploadModal && currentJob && (
-        <div className="modal-overlay-premium">
-          <div className="modal-premium" style={{ maxWidth: '500px' }}>
-            <div className="modal-header-premium">
-              <div className="modal-title-group">
-                <div className="modal-icon-container">
-                  <UploadFileIcon />
-                </div>
-                <div className="modal-title-text">
-                  <h2>Manual CV Upload</h2>
-                  <p>Upload a candidate's CV for {currentJob.title}</p>
-                </div>
-              </div>
-              <button
-                onClick={closeModal}
-                className="btn-close-modal"
-                aria-label="Close modal"
-                disabled={isUploading}
-              >
-                <CloseIcon />
-              </button>
-            </div>
-            <div className="modal-form-content">
-              {uploadMessage && (
-                <div 
-                  className={`message-toast ${uploadMessage.includes("Processing CV") ? "info" : "error"}`} 
-                  style={{ position: 'relative', top: 0, right: 0, marginBottom: '1rem', width: '100%', transform: 'none', whiteSpace: 'pre-wrap', textAlign: 'left', maxHeight: '150px', overflowY: 'auto' }}
-                >
-                  {uploadMessage}
+                                <div className="detail-row">
+                                  <div className="detail-section">
+                                    <h5>Education</h5>
+                                    <p>{candidate.parsed_education || "Not specified"}</p>
+                                  </div>
+                                  <div className="detail-section">
+                                    <h5>Certifications</h5>
+                                    <p>{candidate.parsed_certifications || "None"}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
-              <div className="premium-file-upload">
-                <input
-                  type="file"
-                  multiple
-                  onChange={handleResumeChange}
-                  className="hidden-file-input"
-                  id="hr-resume-upload"
-                  accept=".pdf,.doc,.docx"
-                />
-                <label htmlFor="hr-resume-upload" className="file-upload-label" style={{ padding: '2rem 1rem' }}>
-                  <div className="upload-icon-circle">
-                    <UploadFileIcon className="upload-icon" />
-                  </div>
-                  <span className="upload-main-text">
-                    {resumeFiles.length > 0 
-                      ? `${resumeFiles.length} file(s) selected` 
-                      : "Click to select CV documents (You can select multiple)"}
-                  </span>
-                  <span className="upload-sub-text">
-                    PDF, DOCX up to 5MB
-                  </span>
-                </label>
-              </div>
             </div>
-            <div className="modal-actions-premium">
-              <button
-                type="button"
-                className="btn-modal-cancel"
-                onClick={closeModal}
-                disabled={isUploading}
-              >
-                Cancel
+          </div>
+        </div>
+      )}
+
+      {/* Deep Screen Overlay */}
+      {deepScreenJob && (
+        <div className="deep-screen-overlay">
+          <div className="deep-screen-panel">
+            <div className="panel-header">
+              <h3><PsychologyIcon /> AI Cohort Screening</h3>
+              <button className="btn-close-modal" onClick={() => setDeepScreenJob(null)}>
+                <CloseIcon />
               </button>
-              <button
-                type="button"
-                className="btn-modal-primary"
-                onClick={handleUploadCV}
-                disabled={isUploading || !resumeFile}
-              >
-                {isUploading ? "Uploading & Analyzing AI..." : "+ Upload CV"}
-              </button>
+            </div>
+            
+            <div className="panel-content">
+              <h4>Job: {deepScreenJob.title}</h4>
+              <p className="job-ref">Analyzing cohort of {deepScreenJob.count} shortlisted candidates</p>
+              
+              {isScreening ? (
+                <div className="screening-loading">
+                  <div className="spinner"></div>
+                  <p>AI is analyzing resume depth, skill alignment, and generating custom interview questions...</p>
+                </div>
+              ) : screeningReport ? (
+                <div className="screening-report">
+                  <div className="report-section strengths">
+                    <h5>Key Strengths Identified</h5>
+                    <ul>
+                      {screeningReport.strengths.map((s, i) => <li key={i}>{s}</li>)}
+                    </ul>
+                  </div>
+                  <div className="report-section weaknesses">
+                    <h5>Potential Risk Areas</h5>
+                    <ul>
+                      {screeningReport.weaknesses.map((w, i) => <li key={i}>{w}</li>)}
+                    </ul>
+                  </div>
+                  <div className="report-section questions">
+                    <h5>Recommended Panel Questions</h5>
+                    <ol>
+                      {screeningReport.questions.map((q, i) => <li key={i}>{q}</li>)}
+                    </ol>
+                  </div>
+                  <button className="btn-modal-primary full-width" onClick={() => alert("Mock: Sending assessment invitations to cohort!")}>
+                    Send Technical Assessment Invites
+                  </button>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
@@ -746,4 +347,4 @@ const DashboardHR = () => {
   );
 };
 
-export default DashboardHR;
+export default HROverview;

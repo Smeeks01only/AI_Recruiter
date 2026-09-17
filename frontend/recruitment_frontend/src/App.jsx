@@ -9,7 +9,7 @@ import AdminAIEngine from "./pages/AdminDashboard/AdminAIEngine";
 import AdminSecurity from "./pages/AdminDashboard/AdminSecurity";
 import AdminSettings from "./pages/AdminDashboard/AdminSettings";
 import DashboardCandidate from "./pages/DashboardCandidate/DashboardCandidate";
-import DashboardHR from "./pages/DashboardHR/DashboardHR";
+import HROverview from "./pages/DashboardHR/DashboardHR";
 import CandidateProfile from "./pages/CandidateProfile/CandidateProfile";
 import CandidateJobs from "./pages/CandidateJobs/CandidateJobs";
 import CandidateApplications from "./pages/CandidateApplications/CandidateApplications";
@@ -17,6 +17,7 @@ import HRProfile from "./pages/HRProfile/HRProfile";
 import HRApplications from "./pages/HRApplications/HRApplications";
 import HRSettings from "./pages/HRSettings/HRSettings";
 import AdminProfile from "./pages/AdminProfile/AdminProfile";
+import HRJobs from "./pages/HRJobs/HRJobs";
 
 // Landing Page pages
 import AboutPage from "./pages/Landing_Page_Pages/AboutPage/AboutPage";
@@ -38,7 +39,7 @@ function App() {
         <Route path="/admin/ai-models" element={<AdminAIEngine />} />
         <Route path="/admin/security" element={<AdminSecurity />} />
         <Route path="/admin/settings" element={<AdminSettings />} />
-        <Route path="/hr/dashboard" element={<DashboardHR />} />
+        <Route path="/hr/dashboard" element={<HROverview />} />
         {/* … existing routes … */}
         <Route path="/candidate/dashboard" element={<DashboardCandidate />} />
         {/* Placeholder routes for the pages to be built next */}
@@ -51,6 +52,7 @@ function App() {
         <Route path="/hr/profile" element={<HRProfile />} />
         <Route path="/hr/settings" element={<HRSettings />} />
         <Route path="/hr/applications" element={<HRApplications />} />
+        <Route path="/hr/jobs" element={<HRJobs />} />
         <Route path="/admin/profile" element={<AdminProfile />} />
 
         {/* Landing Page specific routes */}

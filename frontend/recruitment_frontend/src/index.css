@@ -1,5 +1,53 @@
+/* ==========================================================================
+   AI RECRUIT DESIGN SYSTEM - GLOBAL TOKENS
+   ========================================================================== */
+:root {
+  /* --- 1. PRIMARY COLORS (Brand Identity) --- */
+  --primary-color: #4a6bff;        /* Core brand blue (Buttons, Links, Active states) */
+  --primary-hover: #3b5bdb;        /* Slightly darker for hover interactions */
+  --primary-light: #eef1ff;        /* Very light blue for backgrounds/icons */
+  --primary-dark: #2d45ad;         /* Deep blue for borders or emphasis */
+
+  /* --- 2. SECONDARY & ACCENT COLORS --- */
+  --secondary-color: #0f172a;      /* Dark slate/navy for high contrast elements */
+  --accent-color: #10b981;         /* Emerald green for emphasis/accents */
+  
+  /* --- 3. STATUS / FEEDBACK COLORS --- */
+  --success-color: #10b981;        /* Green - success, accepted, shortlisted */
+  --success-bg: #d1fae5;           /* Light green background */
+  --danger-color: #ef4444;         /* Red - delete, rejected, errors */
+  --danger-bg: #fee2e2;            /* Light red background */
+  --warning-color: #f59e0b;        /* Orange - pending, warnings, alerts */
+  --warning-bg: #fef3c7;           /* Light orange background */
+  --info-color: #3b82f6;           /* Blue - general info */
+  --info-bg: #eff6ff;              /* Light blue info background */
+
+  /* --- 4. NEUTRAL COLORS (Text, Borders, Backgrounds) --- */
+  --dark-text: #1e293b;            /* Main headings, primary strong text */
+  --medium-text: #475569;          /* Paragraphs, secondary descriptive text */
+  --light-text: #64748b;           /* Meta text, placeholders, muted/subtle text */
+  --border-color: #e2e8f0;         /* Default border color for cards and inputs */
+  --border-focus: #cbd5e1;         /* Darker border for focus and hover states */
+
+  /* --- 5. BACKGROUND COLORS --- */
+  --bg-main: #f8fafc;              /* Main application body background (off-white) */
+  --white-color: #ffffff;          /* Card, modal, and container backgrounds */
+  
+  /* --- 6. SHADOWS & EFFECTS --- */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-hover: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --transition-fast: 0.15s ease-in-out;
+  --transition-normal: 0.25s ease-in-out;
+}
+
+
+/* ==========================================================================
+   GLOBAL RESET & BASE STYLES
+   ========================================================================== */
 * {
-  font-family: "Inter", sans-serif;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
   font-optical-sizing: auto;
   font-style: normal;
   box-sizing: border-box;
@@ -10,8 +58,16 @@ body, html, #root {
   padding: 0;
   width: 100%;
   height: 100%;
+  background-color: var(--bg-main);
+  color: var(--dark-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+
+/* ==========================================================================
+   GLOBAL UTILITIES / COMPONENTS
+   ========================================================================== */
 /* Global Back Button */
 .back-btn {
   display: flex;
@@ -19,16 +75,16 @@ body, html, #root {
   gap: 0.5rem;
   background: none;
   border: none;
-  color: #64748b;
+  color: var(--light-text);
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
   padding: 0.4rem 0.8rem;
   border-radius: 8px;
 }
 
 .back-btn:hover {
-  color: #3b82f6;
-  background-color: #f1f5f9;
+  color: var(--primary-color);
+  background-color: var(--primary-light);
 }

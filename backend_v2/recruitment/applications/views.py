@@ -173,17 +173,23 @@ def update_application_status(request, pk):
     else:
         msg = f"Update: Your application for {app.job.title} has been {status_value.upper()}."
 
-    Notification.objects.create(user=app.candidate, message=msg)
-    try:
-        send_mail(
-            subject=f"Application Status Update: {app.job.title}",
-            message=msg,
-            from_email="noreply@airecruit.com",
-            recipient_list=[app.candidate.email],
-            fail_silently=True,
-        )
-    except Exception as e:
-        print("Error sending email:", e)
+    if app.candidate:
+        Notification.objects.create(user=app.candidate, message=msg)
+        recipient_email = app.candidate.email
+    else:
+        recipient_email = app.parsed_email
+
+    if recipient_email and recipient_email != "Unknown":
+        try:
+            send_mail(
+                subject=f"Application Status Update: {app.job.title}",
+                message=msg,
+                from_email="noreply@airecruit.com",
+                recipient_list=[recipient_email],
+                fail_silently=True,
+            )
+        except Exception as e:
+            print("Error sending email:", e)
 
     return Response({"message": "Status updated successfully"})
 

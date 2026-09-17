@@ -790,3 +790,89 @@
 .app-dropdown-item.delete:hover {
   background-color: #fee2e2;
 }
+
+.applications-filter-bar { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); } .applications-filter-bar label { font-weight: 600; color: var(--dark-text); } .job-filter-select { padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1rem; color: var(--dark-text); background-color: #f8fafc; flex-grow: 1; max-width: 500px; outline: none; cursor: pointer; transition: border-color 0.2s; } .job-filter-select:focus { border-color: var(--primary-color); }
+
+.filter-card.custom-dropdown-container {
+  position: relative;
+  padding: 0;
+  border: 1px solid rgba(0, 0, 0, 0.08); 
+  background-color: var(--white-color); 
+  flex-grow: 1;
+  max-width: 400px;
+  border-radius: 12px;
+}
+
+.custom-dropdown-trigger {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0.75rem 1.25rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--dark-text);
+  font-size: 0.95rem;
+}
+
+.dropdown-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 1rem;
+}
+
+.dropdown-arrow {
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  color: var(--medium-text);
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.custom-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 100%;
+  background: var(--white-color);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  z-index: 1000;
+  overflow: hidden;
+  animation: slideDown 0.2s ease-out forwards;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.custom-dropdown-item {
+  padding: 0.75rem 1.25rem;
+  font-size: 0.95rem;
+  color: var(--medium-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid rgba(0,0,0,0.03);
+}
+
+.custom-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.custom-dropdown-item:hover {
+  background-color: #f8fafc;
+  color: var(--primary-color);
+  padding-left: 1.5rem;
+}
+
+.custom-dropdown-item.active {
+  background-color: #eef1ff;
+  color: var(--primary-color);
+  font-weight: 600;
+}
