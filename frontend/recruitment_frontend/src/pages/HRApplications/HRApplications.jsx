@@ -27,6 +27,7 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import SchoolIcon from "@mui/icons-material/School";
 import NotesIcon from "@mui/icons-material/Notes";
 import ContactPageIcon from "@mui/icons-material/ContactPage";
+import DownloadIcon from "@mui/icons-material/Download";
 import API_BASE_URL from "../../config";
 
 const HRApplications = () => {
@@ -40,6 +41,7 @@ const HRApplications = () => {
   const [menuOpenFor, setMenuOpenFor] = useState(null);
   const [selectedJobFilter, setSelectedJobFilter] = useState("All Jobs");
   const [isJobFilterOpen, setIsJobFilterOpen] = useState(false);
+  const [selectedApps, setSelectedApps] = useState(new Set());
 
   function capitalizeFirstLetter(name) {
     if (!name) return "";
@@ -139,6 +141,56 @@ const HRApplications = () => {
     } catch (err) {
       console.error("Failed to delete application", err);
       alert("Failed to delete application.");
+    }
+  };
+
+  const toggleSelection = (appId) => {
+    const newSelection = new Set(selectedApps);
+    if (newSelection.has(appId)) {
+      newSelection.delete(appId);
+    } else {
+      newSelection.add(appId);
+    }
+    setSelectedApps(newSelection);
+  };
+
+  const toggleSelectAll = (jobApps) => {
+    const allIds = jobApps.map(a => a.id);
+    const areAllSelected = allIds.every(id => selectedApps.has(id));
+    
+    const newSelection = new Set(selectedApps);
+    if (areAllSelected) {
+      allIds.forEach(id => newSelection.delete(id));
+    } else {
+      allIds.forEach(id => newSelection.add(id));
+    }
+    setSelectedApps(newSelection);
+  };
+
+  const handleDownloadSelected = async () => {
+    if (selectedApps.size === 0) return;
+    
+    try {
+      const response = await axios.post(`${API_BASE_URL}/api/applications/download-marked/`, 
+        { application_ids: Array.from(selectedApps) },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+          responseType: 'blob' 
+        }
+      );
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'ai_marked_resumes.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      
+      setSelectedApps(new Set()); // Clear selection after download
+    } catch (error) {
+      console.error("Download failed", error);
+      alert("Failed to download marked resumes. Check console.");
     }
   };
 
@@ -250,6 +302,13 @@ const HRApplications = () => {
                 </div>
               </div>
               <div className="job-group-actions">
+                <label className="select-all-label">
+                  <input 
+                    type="checkbox" 
+                    checked={apps.length > 0 && apps.every(app => selectedApps.has(app.id))}
+                    onChange={() => toggleSelectAll(apps)}
+                  /> Select All
+                </label>
                 <div className="search-bar">
                   <SearchIcon />
                   <input 
@@ -291,9 +350,15 @@ const HRApplications = () => {
                   return (a.ai_score || 0) - (b.ai_score || 0);
                 }
               }).map((app) => (
-                <div className="candidate-card-premium" key={app.id}>
+                <div className={`candidate-card-premium ${selectedApps.has(app.id) ? 'selected' : ''}`} key={app.id}>
                   <div className="cand-header">
                     <div className="cand-profile">
+                      <input 
+                        type="checkbox" 
+                        className="cand-select-checkbox"
+                        checked={selectedApps.has(app.id)}
+                        onChange={() => toggleSelection(app.id)}
+                      />
                       <div className="cand-avatar">{getInitials(app.applicant_first_name, app.applicant_last_name)}</div>
                       <div className="cand-name-col">
                         <h4>{capitalizeFirstLetter(app.applicant_first_name)} {capitalizeFirstLetter(app.applicant_last_name)}</h4>
@@ -523,6 +588,19 @@ const HRApplications = () => {
               </div>
             </div>
           </div>
+        </div>
+      )}
+      
+      {/* Floating Action Bar */}
+      {selectedApps.size > 0 && (
+        <div className="floating-action-bar">
+          <div className="fab-info">
+            <span className="fab-count">{selectedApps.size}</span>
+            <span> candidates selected</span>
+          </div>
+          <button className="btn-fab-download" onClick={handleDownloadSelected}>
+            <DownloadIcon /> Download AI-Marked Resumes
+          </button>
         </div>
       )}
       </div>

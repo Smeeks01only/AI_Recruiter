@@ -3,7 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
-
+from django.http import HttpResponse
+import csv
 from .models import Application
 from .serializers import ApplicationSerializer
 from jobs.models import Job
@@ -296,3 +297,66 @@ def delete_application(request, pk):
 
     app.delete()
     return Response({"message": "Application deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def download_marked_resumes(request):
+    if request.user.role not in ['hr', 'admin']:
+        return Response({'error': 'Unauthorized.'}, status=status.HTTP_403_FORBIDDEN)
+        
+    application_ids = request.data.get('application_ids', [])
+    if not application_ids:
+        return Response({'error': 'No applications selected.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+    applications = Application.objects.filter(id__in=application_ids)
+    
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="ai_marked_resumes.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow([
+        'Job Title',
+        'Applicant Name', 
+        'Email',
+        'Phone',
+        'AI Score (%)',
+        'Match Explanation',
+        'Parsed Skills',
+        'Years Experience',
+        'Education',
+        'Status'
+    ])
+    
+    for app in applications:
+        # Format skills array into string
+        skills = app.parsed_skills if app.parsed_skills else []
+        skills_str = ", ".join(skills) if isinstance(skills, list) else str(skills)
+        
+        # Format explanation array into string
+        explanation = app.match_explanation if app.match_explanation else []
+        explanation_str = " | ".join(explanation) if isinstance(explanation, list) else str(explanation)
+        
+        # Get correct name
+        name = app.parsed_name
+        if app.candidate and app.candidate.first_name:
+            name = f"{app.candidate.first_name} {app.candidate.last_name}"
+            
+        # Get correct email
+        email = app.parsed_email
+        if app.candidate and app.candidate.email:
+            email = app.candidate.email
+            
+        writer.writerow([
+            app.job.title if app.job else 'Unknown',
+            name or 'Unknown',
+            email or 'Unknown',
+            app.parsed_phone or 'Unknown',
+            app.ai_score or 0,
+            explanation_str,
+            skills_str,
+            app.parsed_experience or 0,
+            app.parsed_education or 'Unknown',
+            app.status
+        ])
+        
+    return response

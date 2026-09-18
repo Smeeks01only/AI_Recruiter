@@ -10,4 +10,5 @@ urlpatterns = [
     path('<int:pk>/update_status/', views.update_application_status, name='update_application_status'),
     path('<int:pk>/delete/', views.delete_application, name='delete_application'),
     path('my_stats/', views.candidate_application_stats, name='candidate_application_stats'),
+    path('download-marked/', views.download_marked_resumes, name='download_marked_resumes'),
 ]
