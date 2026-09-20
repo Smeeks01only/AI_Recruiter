@@ -1,17 +1,14 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import ChangeHistoryIcon from "@mui/icons-material/ChangeHistory";
+import { Link, useNavigate } from "react-router-dom";
+import logoUrl from "../../assets/logo.svg";
 import "./LandingNavbar.css";
 
 const LandingNavbar = () => {
   return (
     <header className="header">
       <Link to="/" className="logo" style={{ textDecoration: "none" }}>
-        <ChangeHistoryIcon style={{ color: "#4a6bff", fontSize: "2rem" }} />
-        <span>
-          <span style={{ color: "var(--secondary-color)" }}>AI</span>
-          <span className="logo-accent"> Recruit</span>
-        </span>
+        <img src={logoUrl} alt="AI Recruit Logo" style={{ width: "1.75rem", height: "1.75rem", marginRight: "0.5rem" }} />
+        <span>AI Recruit</span>
       </Link>
       <nav className="nav-links">
         <a href="/#features" className="nav-link">
@@ -20,8 +17,8 @@ const LandingNavbar = () => {
         <a href="/#about" className="nav-link">
           About
         </a>
-        <Link to="/login" className="nav-link login-link">
-          Login
+        <Link to="/login" className="nav-login-btn">
+          Sign In
         </Link>
       </nav>
     </header>

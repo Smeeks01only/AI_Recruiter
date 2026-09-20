@@ -42,7 +42,7 @@
   color: var(--primary-color);
 }
 
-.login-link {
+.nav-login-btn {
   background-color: var(--primary-color);
   color: white !important;
   padding: 0.6rem 1.5rem;
@@ -50,7 +50,7 @@
   box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
 }
 
-.login-link:hover {
+.nav-login-btn:hover {
   background-color: #2563eb;
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);

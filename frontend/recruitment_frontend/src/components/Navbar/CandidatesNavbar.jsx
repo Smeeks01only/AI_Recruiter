@@ -8,7 +8,7 @@ import LogoutButton from "../Logout/LogoutButton";
 import "./CandidatesNavbar.css";
 
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import ChangeHistoryIcon from "@mui/icons-material/ChangeHistory";
+import logoUrl from "../../assets/logo.svg";
 import API_BASE_URL from "../../config";
 
 const CandidatesNavbar = () => {
@@ -69,8 +69,8 @@ const CandidatesNavbar = () => {
         className="logo"
         style={{ textDecoration: "none" }}
       >
-        <ChangeHistoryIcon style={{ color: "#4a6bff", fontSize: "2rem" }} />
-        <span>AI<span className="logo-accent"> Recruit</span></span>
+        <img src={logoUrl} alt="AI Recruit Logo" style={{ width: "1.75rem", height: "1.75rem", marginRight: "0.5rem" }} />
+        <span>AI Recruit</span>
       </Link>
 
       <div className="header-controls">

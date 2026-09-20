@@ -1,20 +1,22 @@
 // src/pages/Register/Register.jsx
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Register.css";
 
 // Import Material UI Icons
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
-import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
-import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import CheckIcon from "@mui/icons-material/Check";
+import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import API_BASE_URL from "../../config";
+import logoUrl from "../../assets/logo.svg";
 
 function Register() {
   const navigate = useNavigate();
@@ -30,13 +32,14 @@ function Register() {
     last_name: "",
     role: "candidate",
     bio: "",
+    agreeToTerms: false,
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }));
 
     // Clear error for this field when user starts typing again
@@ -91,8 +94,8 @@ function Register() {
 
     setIsLoading(true);
 
-    // Remove confirmPassword before sending to API
-    const { confirmPassword, ...dataToSend } = formData;
+    // Remove confirmPassword and agreeToTerms before sending to API
+    const { confirmPassword, agreeToTerms, ...dataToSend } = formData;
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/users/register/`, {
@@ -142,14 +145,15 @@ function Register() {
     <div className="auth-page register-page">
       <div className="auth-container">
         <div className="auth-card">
+          <Link to="/" className="back-link">
+            <ArrowBackIcon className="back-icon" />
+            <span>Back to Home</span>
+          </Link>
           <div className="auth-header">
-            <Link to="/" className="back-link">
-              <ArrowBackIcon className="back-icon" />
-              <span>Back to Home</span>
-            </Link>
-            <div className="auth-logo">
+            <Link to="/" className="auth-logo" style={{ textDecoration: 'none', alignItems: 'center' }}>
+              <img src={logoUrl} alt="AI Recruit Logo" style={{ width: "1.75rem", height: "1.75rem", marginRight: "0.5rem" }} />
               <span className="logo-text">AI Recruit</span>
-            </div>
+            </Link>
             <h1 className="auth-title">Create Account</h1>
             <p className="auth-subtitle">
               Complete the form below to get started
@@ -165,9 +169,7 @@ function Register() {
               <div className="form_group">
                 <label htmlFor="first_name">First Name</label>
                 <div className="input-group">
-                  <div className="input-icon">
-                    <BadgeOutlinedIcon />
-                  </div>
+                  <BadgeOutlinedIcon className="input-icon" />
                   <input
                     id="first_name"
                     type="text"
@@ -186,9 +188,7 @@ function Register() {
               <div className="form_group">
                 <label htmlFor="last_name">Last Name</label>
                 <div className="input-group">
-                  <div className="input-icon">
-                    <BadgeOutlinedIcon />
-                  </div>
+                  <BadgeOutlinedIcon className="input-icon" />
                   <input
                     id="last_name"
                     type="text"
@@ -208,9 +208,7 @@ function Register() {
             <div className="form_group">
               <label htmlFor="username">Username</label>
               <div className="input-group">
-                <div className="input-icon">
-                  <PersonOutlineIcon />
-                </div>
+                <PersonOutlineIcon className="input-icon" />
                 <input
                   id="username"
                   type="text"
@@ -229,14 +227,12 @@ function Register() {
             <div className="form_group">
               <label htmlFor="email">Email Address</label>
               <div className="input-group">
-                <div className="input-icon">
-                  <EmailOutlinedIcon />
-                </div>
+                <EmailOutlinedIcon className="input-icon" />
                 <input
                   id="email"
                   type="email"
                   name="email"
-                  placeholder="Enter your email"
+                  placeholder="Enter your email address"
                   value={formData.email}
                   onChange={handleChange}
                   required
@@ -250,9 +246,7 @@ function Register() {
             <div className="form_group">
               <label htmlFor="password">Password</label>
               <div className="input-group">
-                <div className="input-icon">
-                  <LockOutlinedIcon />
-                </div>
+                <LockOutlinedIcon className="input-icon" />
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
@@ -262,14 +256,14 @@ function Register() {
                   onChange={handleChange}
                   required
                 />
-                {/* <button
+                <button
                   type="button"
                   className="toggle-password"
-                  onClick={togglePasswordVisibility}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label="Toggle password visibility"
                 >
                   {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                </button> */}
+                </button>
               </div>
               {errors.password && (
                 <span className="field-error">{errors.password}</span>
@@ -282,9 +276,7 @@ function Register() {
             <div className="form_group">
               <label htmlFor="confirmPassword">Confirm Password</label>
               <div className="input-group">
-                <div className="input-icon">
-                  <LockOutlinedIcon />
-                </div>
+                <LockOutlinedIcon className="input-icon" />
                 <input
                   id="confirmPassword"
                   type={showPassword ? "text" : "password"}
@@ -294,20 +286,41 @@ function Register() {
                   onChange={handleChange}
                   required
                 />
+                <button
+                  type="button"
+                  className="toggle-password"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label="Toggle confirm password visibility"
+                >
+                  {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </button>
               </div>
               {errors.confirmPassword && (
                 <span className="field-error">{errors.confirmPassword}</span>
               )}
             </div>
 
-
+            <div className="form_group">
+              <label htmlFor="role">Account Type</label>
+              <div className="input-group">
+                <PersonOutlineIcon className="input-icon" />
+                <select
+                  id="role"
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="candidate">Candidate</option>
+                  <option value="hr">HR Professional</option>
+                </select>
+              </div>
+            </div>
 
             <div className="form_group">
               <label htmlFor="bio">Professional Bio (Optional)</label>
-              <div className="input-group textarea-group">
-                <div className="input-icon textarea-icon">
-                  <DescriptionOutlinedIcon />
-                </div>
+              <div className="input-group">
+                <DescriptionOutlinedIcon className="input-icon textarea-icon" />
                 <textarea
                   id="bio"
                   name="bio"
@@ -321,16 +334,26 @@ function Register() {
 
             <div className="terms-agreement">
               <label className="checkbox-label">
-                <input type="checkbox" required />
-                <span>
+                <div className="checkbox-container">
+                  <input
+                    type="checkbox"
+                    name="agreeToTerms"
+                    checked={formData.agreeToTerms}
+                    onChange={handleChange}
+                    required
+                    className="checkbox-custom"
+                  />
+                  <CheckIcon className="checkbox-icon" fontSize="small" />
+                </div>
+                <span className="terms-text">
                   I agree to the{" "}
-                  <a href="/terms" className="terms-link">
+                  <Link to="/terms" className="terms-link">
                     Terms of Service
-                  </a>{" "}
+                  </Link>{" "}
                   and{" "}
-                  <a href="/privacy" className="terms-link">
+                  <Link to="/privacy" className="terms-link">
                     Privacy Policy
-                  </a>
+                  </Link>
                 </span>
               </label>
             </div>
@@ -353,7 +376,7 @@ function Register() {
           <div className="auth-footer">
             <p>
               Already have an account?{" "}
-              <Link to="/login" className="login-link">
+              <Link to="/login" className="auth-redirect-link">
                 Sign In
               </Link>
             </p>

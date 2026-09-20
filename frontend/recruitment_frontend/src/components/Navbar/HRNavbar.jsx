@@ -3,7 +3,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import ChangeHistoryIcon from "@mui/icons-material/ChangeHistory";
+import logoUrl from "../../assets/logo.svg";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import LogoutButton from "../Logout/LogoutButton";
 import "./HRNavbar.css";
@@ -25,8 +25,8 @@ const HRNavbar = () => {
         className="logo"
         style={{ textDecoration: "none" }}
       >
-        <ChangeHistoryIcon style={{ color: "#4a6bff", fontSize: "2rem" }} />
-        <span>AI<span className="logo-accent"> Recruit</span></span>
+        <img src={logoUrl} alt="AI Recruit Logo" style={{ width: "1.75rem", height: "1.75rem", marginRight: "0.5rem" }} />
+        <span>AI Recruit</span>
       </Link>
 
       <div className="header-controls">
