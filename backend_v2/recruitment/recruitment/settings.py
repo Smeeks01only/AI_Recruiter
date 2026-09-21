@@ -53,8 +53,7 @@ INSTALLED_APPS = [
     'applications',
     'users',
     'reports',
-    
-    
+    'django.contrib.postgres',
 ]
 
 MIDDLEWARE = [

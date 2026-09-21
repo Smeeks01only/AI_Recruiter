@@ -1,67 +1,82 @@
-.system-stats-cards {
+.system-stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: 1fr;
   gap: 1.5rem;
-  margin-bottom: 2rem;
 }
 
-.system-stats-cards .stat-card {
-  background: white;
+@media (min-width: 640px) {
+  .system-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1024px) {
+  .system-stats-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+.stat-card-modern {
+  background-color: #ffffff;
+  border-radius: 1rem;
   padding: 1.5rem;
-  border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-  display: flex;
-  align-items: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: 1px solid rgba(226, 232, 240, 0.5);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
+  border: 1px solid #f1f5f9;
+  transition: transform 0.3s;
 }
 
-.system-stats-cards .stat-card:hover {
+.stat-card-modern:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.06);
 }
 
-.stat-icon-text {
+.stat-header {
   display: flex;
   align-items: center;
-  gap: 1.2rem;
-  width: 100%;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
-.stat-icon {
-  font-size: 2.5rem !important;
-  padding: 0.8rem;
-  border-radius: 12px;
+.stat-icon-wrapper {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.stat-icon.blue {
-  background: #eef2ff;
-  color: #4f46e5;
+.stat-icon-wrapper svg {
+  font-size: 1.5rem !important;
 }
 
-.stat-icon.purple {
-  background: #faf5ff;
+.blue-icon {
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+
+.purple-icon {
+  background-color: #faf5ff;
   color: #9333ea;
 }
 
-.stat-icon.green {
-  background: #f0fdf4;
+.green-icon {
+  background-color: #f0fdf4;
   color: #16a34a;
 }
 
-.stat-icon.orange {
+.amber-icon {
+  background-color: #fffbeb;
   color: #f59e0b;
-  background-color: rgba(251, 191, 36, 0.15);
 }
 
-.stat-card h4 {
-  font-size: 1rem;
-  color: #444;
-  margin-bottom: 0.2rem;
+.stat-title {
+  color: #475569;
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.025em;
+  margin: 0;
 }
 
-.stat-card p {
-  font-size: 1.4rem;
-  font-weight: bold;
-  color: #111;
+.stat-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0 0.25rem;
 }

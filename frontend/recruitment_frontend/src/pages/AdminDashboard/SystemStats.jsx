@@ -69,45 +69,49 @@ const SystemStats = () => {
   }, []);
 
   return (
-    <div className="system-stats-cards">
-      <div className="stat-card">
-        <div className="stat-icon-text">
-          <GroupIcon className="stat-icon blue" />
-          <div>
-            <h4>Total Users</h4>
-            <p>{stats.users}</p>
+    <div className="system-stats-grid">
+      {/* Stat Card 1: Total Users */}
+      <div className="stat-card-modern">
+        <div className="stat-header">
+          <div className="stat-icon-wrapper blue-icon">
+            <GroupIcon fontSize="small" />
           </div>
+          <h3 className="stat-title">Total Users</h3>
         </div>
+        <p className="stat-value">{stats.users}</p>
       </div>
 
-      <div className="stat-card">
-        <div className="stat-icon-text">
-          <WorkOutlineIcon className="stat-icon purple" />
-          <div>
-            <h4>Total Jobs</h4>
-            <p>{stats.jobs}</p>
+      {/* Stat Card 2: Total Jobs */}
+      <div className="stat-card-modern">
+        <div className="stat-header">
+          <div className="stat-icon-wrapper purple-icon">
+            <WorkOutlineIcon fontSize="small" />
           </div>
+          <h3 className="stat-title">Total Jobs</h3>
         </div>
+        <p className="stat-value">{stats.jobs}</p>
       </div>
 
-      <div className="stat-card">
-        <div className="stat-icon-text">
-          <AssignmentTurnedInIcon className="stat-icon green" />
-          <div>
-            <h4>Total Applications</h4>
-            <p>{stats.applications}</p>
+      {/* Stat Card 3: Total Applications */}
+      <div className="stat-card-modern">
+        <div className="stat-header">
+          <div className="stat-icon-wrapper green-icon">
+            <AssignmentTurnedInIcon fontSize="small" />
           </div>
+          <h3 className="stat-title">Total Applications</h3>
         </div>
+        <p className="stat-value">{stats.applications}</p>
       </div>
 
-      <div className="stat-card">
-        <div className="stat-icon-text">
-          <LeaderboardIcon className="stat-icon orange" />
-          <div>
-            <h4>Avg. Match Score</h4>
-            <p>{stats.avgScore ?? "N/A"}</p>
+      {/* Stat Card 4: Avg. Match Score */}
+      <div className="stat-card-modern">
+        <div className="stat-header">
+          <div className="stat-icon-wrapper amber-icon">
+            <LeaderboardIcon fontSize="small" />
           </div>
+          <h3 className="stat-title">Avg. Match Score</h3>
         </div>
+        <p className="stat-value">{stats.avgScore ?? "N/A"}</p>
       </div>
     </div>
   );

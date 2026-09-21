@@ -140,21 +140,28 @@ const CandidateJobs = () => {
   return (
     <div className="candidate_jobs_container">
       <CandidatesNavbar />
-      <div className="candidate-jobs">
-        <div className="header-actions">
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            <button onClick={() => navigate(-1)} className="back-btn">
+      <main className="candidate-jobs-main">
+        {/* Page Header */}
+        <div className="jobs-page-header">
+          <div className="jobs-header-back">
+            <button onClick={() => navigate(-1)} className="back-btn-modern">
               <ArrowBackIcon fontSize="small" /> Back
             </button>
-            <h1 className="page-title">Job Listings</h1>
           </div>
-          <button
-            onClick={toggleMyApplicationsModal}
-            className="my-applications-btn"
-          >
-            <AssignmentIndIcon className="btn-icon" />
-            <span>My Applications</span>
-          </button>
+
+          <h1 className="jobs-page-title">
+            Job Listings
+          </h1>
+
+          <div className="jobs-header-actions">
+            <button
+              onClick={toggleMyApplicationsModal}
+              className="my-apps-btn-modern"
+            >
+              <AssignmentIndIcon fontSize="small" />
+              <span className="hidden-sm">My Applications</span>
+            </button>
+          </div>
         </div>
 
         {/* My Applications Modal */}
@@ -210,37 +217,36 @@ const CandidateJobs = () => {
         )}
 
         {/* Job Listings */}
-        {/* Job Listings */}
-        <div className="job-listings-container">
+        <div className="job-list-wrapper">
           {availableJobs.length === 0 ? (
             <p className="no-jobs">
               No jobs available or you've applied to all.
             </p>
           ) : (
             availableJobs.map((job) => (
-              <div key={job.id} className="job-card">
-                <div className="job_card_header">
-                  <WorkOutlineIcon className="job-icon" />
+              <article key={job.id} className="job-card-modern">
+                <div className="job-card-header-modern">
+                  <WorkOutlineIcon className="job-icon-modern" />
                   <h2>{job.title}</h2>
                 </div>
-                <p className="job-desc">
-                  {job.description.substring(0, 150)}...
+                <p className="job-desc-modern">
+                  {job.description.length > 150 ? `${job.description.substring(0, 150)}...` : job.description}
                 </p>
-                <div className="job-card-footer">
+                <div className="job-card-footer-modern">
                   {appliedJobIds.includes(job.id) ? (
-                    <button className="apply-btn" disabled style={{ backgroundColor: '#94a3b8', cursor: 'not-allowed' }}>
+                    <button className="apply-btn-modern disabled" disabled>
                       Already Applied
                     </button>
                   ) : (
                     <button
-                      className="apply-btn"
+                      className="apply-btn-modern"
                       onClick={() => openApplyModal(job)}
                     >
                       Apply Now
                     </button>
                   )}
                 </div>
-              </div>
+              </article>
             ))
           )}
         </div>
@@ -391,7 +397,7 @@ const CandidateJobs = () => {
             </div>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 };

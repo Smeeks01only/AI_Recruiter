@@ -7,8 +7,8 @@ const AdminOverview = () => {
   return (
     <AdminLayout>
       <div className="admin-dashboard-content">
-        <div className="admin-dashboard-header">
-          <h1>Admin Dashboard</h1>
+        <div className="admin-dashboard-header-modern mb-8">
+          <h1 className="admin-dashboard-title-modern">Admin Dashboard</h1>
         </div>
         
         <SystemStats />

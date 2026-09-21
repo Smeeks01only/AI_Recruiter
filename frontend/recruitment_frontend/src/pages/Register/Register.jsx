@@ -81,6 +81,10 @@ function Register() {
       newErrors.last_name = "Last name is required";
     }
 
+    if (!formData.agreeToTerms) {
+      newErrors.agreeToTerms = "You must agree to the Terms and Privacy Policy";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -340,7 +344,6 @@ function Register() {
                     name="agreeToTerms"
                     checked={formData.agreeToTerms}
                     onChange={handleChange}
-                    required
                     className="checkbox-custom"
                   />
                   <CheckIcon className="checkbox-icon" fontSize="small" />
@@ -356,6 +359,11 @@ function Register() {
                   </Link>
                 </span>
               </label>
+              {errors.agreeToTerms && (
+                <div className="field-error" style={{ marginTop: "0.5rem" }}>
+                  {errors.agreeToTerms}
+                </div>
+              )}
             </div>
 
             <button

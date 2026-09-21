@@ -73,18 +73,24 @@ body, html, #root {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: none;
+  background: transparent;
   border: none;
   color: var(--light-text);
-  font-weight: 600;
-  font-size: 1rem;
+  font-weight: 500;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: all var(--transition-fast);
-  padding: 0.4rem 0.8rem;
-  border-radius: 8px;
+  transition: color 0.2s, transform 0.2s;
+  padding: 0;
 }
 
 .back-btn:hover {
-  color: var(--primary-color);
-  background-color: var(--primary-light);
+  color: var(--dark-text);
+}
+
+.back-btn svg {
+  transition: transform 0.2s;
+}
+
+.back-btn:hover svg {
+  transform: translateX(-4px);
 }

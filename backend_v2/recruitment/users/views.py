@@ -1,8 +1,8 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Users, Notification
-from .serializers import UsersSerializer, NotificationSerializer
+from .models import Users, Notification, PlatformSettings, SecuritySettings, SecurityLog
+from .serializers import UsersSerializer, NotificationSerializer, PlatformSettingsSerializer, SecuritySettingsSerializer, SecurityLogSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
 
@@ -41,7 +41,8 @@ def create_user(request):
 @api_view(['POST'])
 def register_candidate(request):
     data = request.data.copy()
-    data['role'] = 'candidate'  # force role to candidate regardless of input
+    if 'role' not in data:
+        data['role'] = 'candidate'  # default to candidate if not provided
 
     serializer = UsersSerializer(data=data)
     if serializer.is_valid():
@@ -148,3 +149,53 @@ def seed_users(request):
         return Response({"message": "Accounts already exist!"})
         
     return Response({"message": " | ".join(messages)})
+
+
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+def platform_settings_view(request):
+    if not request.user.is_superuser and request.user.role != 'admin':
+        return Response({'error': 'Only admins can view or modify settings.'}, status=status.HTTP_403_FORBIDDEN)
+        
+    settings = PlatformSettings.load()
+    if request.method == 'GET':
+        serializer = PlatformSettingsSerializer(settings)
+        return Response(serializer.data)
+        
+    elif request.method == 'PUT':
+        serializer = PlatformSettingsSerializer(settings, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+def security_settings_view(request):
+    if not request.user.is_superuser and request.user.role != 'admin':
+        return Response({'error': 'Only admins can view or modify settings.'}, status=status.HTTP_403_FORBIDDEN)
+        
+    settings = SecuritySettings.load()
+    if request.method == 'GET':
+        serializer = SecuritySettingsSerializer(settings)
+        return Response(serializer.data)
+        
+    elif request.method == 'PUT':
+        serializer = SecuritySettingsSerializer(settings, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def security_logs_view(request):
+    if not request.user.is_superuser and request.user.role != 'admin':
+        return Response({'error': 'Only admins can view security logs.'}, status=status.HTTP_403_FORBIDDEN)
+    
+    logs = SecurityLog.objects.all()
+    
+    # Get only the latest 10 logs
+    logs = logs[:10]
+    serializer = SecurityLogSerializer(logs, many=True)
+    return Response(serializer.data)

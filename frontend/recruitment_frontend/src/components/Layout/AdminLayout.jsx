@@ -13,27 +13,27 @@ const AdminLayout = ({ children }) => {
     <div className="admin-dashboard-container">
       <AdminNavbar />
       <div className="admin-layout-body">
-        <aside className="admin-sidebar">
-          <nav className="admin-sidebar-nav">
-            <NavLink to="/admin/dashboard" className="sidebar-link">
-              <DashboardIcon /> Dashboard
+        <aside className="admin-sidebar-modern">
+          <nav className="admin-sidebar-nav-modern">
+            <NavLink to="/admin/dashboard" className="sidebar-link-modern">
+              <DashboardIcon fontSize="small" /> Dashboard
             </NavLink>
-            <NavLink to="/admin/users" className="sidebar-link">
-              <PeopleIcon /> Manage Users
+            <NavLink to="/admin/users" className="sidebar-link-modern">
+              <PeopleIcon fontSize="small" /> Manage Users
             </NavLink>
-            <NavLink to="/admin/ai-models" className="sidebar-link">
-              <ModelTrainingIcon /> AI Engine
+            <NavLink to="/admin/ai-models" className="sidebar-link-modern">
+              <ModelTrainingIcon fontSize="small" /> AI Engine
             </NavLink>
-            <NavLink to="/admin/security" className="sidebar-link">
-              <SecurityIcon /> Security
+            <NavLink to="/admin/security" className="sidebar-link-modern">
+              <SecurityIcon fontSize="small" /> Security
             </NavLink>
-            <NavLink to="/admin/settings" className="sidebar-link">
-              <SettingsIcon /> Settings
+            <NavLink to="/admin/settings" className="sidebar-link-modern">
+              <SettingsIcon fontSize="small" /> Settings
             </NavLink>
           </nav>
         </aside>
 
-        <main className="admin-main-content">
+        <main className="admin-main-content-modern">
           {children}
         </main>
       </div>

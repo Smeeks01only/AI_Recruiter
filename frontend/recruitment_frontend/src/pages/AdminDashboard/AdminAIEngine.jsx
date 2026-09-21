@@ -8,11 +8,11 @@ const AdminAIEngine = () => {
   return (
     <AdminLayout>
       <div className="admin-dashboard-content">
-        <div className="admin-dashboard-header">
-          <h1>AI Engine</h1>
+        <div className="admin-dashboard-header-modern mb-8">
+          <h1 className="admin-dashboard-title-modern">AI Engine</h1>
         </div>
         
-        <div className="model-bias-wrapper">
+        <div className="model-bias-wrapper-modern">
           <ModelManager />
           <BiasAudit />
         </div>

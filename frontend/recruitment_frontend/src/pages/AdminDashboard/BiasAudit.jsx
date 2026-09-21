@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "./BiasAudit.css";
+import BalanceIcon from "@mui/icons-material/Balance";
+import ShieldIcon from "@mui/icons-material/Shield";
+import ErrorIcon from "@mui/icons-material/Error";
+import "./ModelManager.css"; // Reuse shared ai-engine-card styles
 import API_BASE_URL from "../../config";
 
 const BiasAudit = () => {
@@ -33,20 +36,33 @@ const BiasAudit = () => {
   };
 
   return (
-    <div className="bias-audit-container">
-      <h2>Bias Detection</h2>
+    <div className="ai-engine-card">
+      <div className="ai-engine-icon-wrapper indigo-bg border-indigo">
+        <BalanceIcon className="ai-engine-icon text-indigo" fontSize="large" />
+      </div>
+      
+      <h2 className="ai-engine-card-title">
+        Bias Detection
+      </h2>
+      
+      <p className="ai-engine-desc">
+        Run comprehensive analytics on candidate matching algorithms to ensure fair, unbiased, and equitable recruitment outcomes.
+      </p>
+      
       <button
-        className="run-audit-btn"
+        className="ai-engine-btn btn-primary"
         onClick={handleBiasCheck}
         disabled={loading}
       >
+        <ShieldIcon fontSize="small" />
         {loading ? "Checking for Bias..." : "Run Bias Audit"}
       </button>
 
-      {error && <p className="status-message" style={{color: '#dc2626', background: '#fef2f2', borderColor: '#fecaca'}}>{error}</p>}
+      {error && <p className="ai-status-msg error"><ErrorIcon fontSize="small"/> {error}</p>}
+      
       {biasResult && (
-        <div className="audit-results">
-          <h3>
+        <div className="ai-audit-results">
+          <h3 className={biasResult.bias_detected ? "text-error" : "text-success"}>
             {biasResult.bias_detected ? "⚠️ Bias Detected" : "✅ No Bias Detected"}
           </h3>
           <p>

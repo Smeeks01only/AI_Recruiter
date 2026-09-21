@@ -31,37 +31,51 @@ const CandidateApplications = () => {
   return (
     <div className="candidate_applications_container">
       <CandidatesNavbar />
-      <div className="candidate-applications">
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "2rem" }}>
-          <button onClick={() => navigate(-1)} className="back-btn">
+      <main className="candidate-apps-main">
+        {/* Page Header */}
+        <div className="apps-page-header">
+          <button onClick={() => navigate(-1)} className="back-btn shrink-0">
             <ArrowBackIcon fontSize="small" /> Back
           </button>
-          <h1 style={{ margin: 0 }}>Your Applications</h1>
+          <h1 className="apps-page-title">
+            Your Applications
+          </h1>
         </div>
-        {applications.length === 0 && (
-          <p>You haven’t applied to any jobs yet.</p>
-        )}
-        {applications.map((app) => (
-          <div key={app.id} className="application-card">
-            <h2>{app.job_title}</h2>
-            <p>
-              <strong>Status:</strong> {app.status}
-            </p>
-            {/* <p>
-              <strong>Score:</strong> {app.score}
-            </p> */}
-            <p>
-              <strong>Match Score:</strong> {app.ai_score}
-            </p>
-            {/* <p>
-              <strong>Feedback:</strong> {app.explanation}
-            </p> */}
-            <a href={app.resume_url} target="_blank" rel="noopener noreferrer">
-              View Resume
-            </a>
-          </div>
-        ))}
-      </div>
+
+        {/* Applications List Container */}
+        <div className="app-list-wrapper">
+          {applications.length === 0 && (
+            <p className="no-apps-msg">You haven't applied to any jobs yet.</p>
+          )}
+          {applications.map((app) => (
+            <article key={app.id} className="app-card-modern">
+              <h2 className="app-card-title">
+                {app.job_title}
+              </h2>
+              
+              <div className="app-details">
+                <p className="app-detail-item">
+                  <span className="detail-label">Status:</span> {app.status}
+                </p>
+                <p className="app-detail-item">
+                  <span className="detail-label">Match Score:</span> {app.ai_score}
+                </p>
+              </div>
+              
+              <div className="app-actions">
+                <a 
+                  href={app.resume_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="app-action-link"
+                >
+                  View Resume
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </main>
     </div>
   );
 };

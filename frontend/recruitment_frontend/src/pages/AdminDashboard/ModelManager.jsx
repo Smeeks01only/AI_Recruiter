@@ -4,6 +4,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
+import MemoryIcon from "@mui/icons-material/Memory";
 import "./ModelManager.css";
 import API_BASE_URL from "../../config";
 
@@ -98,41 +99,49 @@ const ModelManager = () => {
   };
 
   return (
-    <div className="model-manager-container">
-      <h2>🧠 AI Model Management</h2>
-      <div className="model-info">
-        <p>
-          <strong>Model:</strong> Resume Scorer
-        </p>
-        <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-          <strong>Last Trained:</strong> {lastTrained || "Loading..."}
-          <button
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#4a6bff', display: 'flex', alignItems: 'center' }}
-            onClick={fetchLastTrainedDate}
-            title="Refresh Status"
-          >
-            <RefreshIcon fontSize="small" />
-          </button>
-        </p>
+    <div className="ai-engine-card">
+      <div className="ai-engine-icon-wrapper brand-bg border-brand">
+        <MemoryIcon className="ai-engine-icon text-brand" fontSize="large" />
       </div>
-
+      
+      <h2 className="ai-engine-card-title">
+        AI Model Management
+      </h2>
+      
+      <div className="ai-engine-details">
+        <div className="ai-engine-detail-row">
+          <span className="detail-label">Model</span>
+          <span className="detail-value">Resume Scorer</span>
+        </div>
+        <div className="ai-engine-detail-row">
+          <span className="detail-label">Last Trained</span>
+          <span className="detail-value flex-center-gap">
+            {lastTrained || "Loading..."}
+            <button onClick={fetchLastTrainedDate} className="refresh-icon-btn" title="Refresh Status">
+              <RefreshIcon fontSize="small" />
+            </button>
+          </span>
+        </div>
+      </div>
+      
       <button
-        className="retrain-btn"
+        className="ai-engine-btn btn-outline"
         onClick={handleRetrain}
         disabled={isTraining}
       >
+        <AutorenewIcon fontSize="small" />
         {isTraining ? "Sending Request..." : "Retrain Model"}
       </button>
 
       {message && (
-        <p className="status-message">
-          <CheckCircleIcon fontSize="small" style={{ marginRight: "5px", verticalAlign: "middle" }} />
+        <p className="ai-status-msg success">
+          <CheckCircleIcon fontSize="small" />
           {message}
         </p>
       )}
       {error && (
-        <p className="status-message" style={{color: '#dc2626', background: '#fef2f2', borderColor: '#fecaca'}}>
-          <ErrorIcon fontSize="small" style={{ marginRight: "5px", verticalAlign: "middle" }} />
+        <p className="ai-status-msg error">
+          <ErrorIcon fontSize="small" />
           {error}
         </p>
       )}

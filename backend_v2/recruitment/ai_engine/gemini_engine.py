@@ -1,8 +1,8 @@
 import os
 import json
 from groq import Groq
-import pdfplumber
-import docx2txt
+# import pdfplumber
+# import docx2txt
 from django.conf import settings
 import logging
 from datetime import datetime
@@ -19,11 +19,11 @@ else:
 def extract_text_from_pdf(pdf_path):
     try:
         text = ""
-        with pdfplumber.open(pdf_path) as pdf:
-            for page in pdf.pages:
-                page_text = page.extract_text()
-                if page_text:
-                    text += page_text + "\n"
+        # with pdfplumber.open(pdf_path) as pdf:
+        #     for page in pdf.pages:
+        #         page_text = page.extract_text()
+        #         if page_text:
+        #             text += page_text + "\n"
         if not text.strip():
             return "ERROR_EMPTY_PDF: The PDF contains no extractable text. It might be an image-based scan, which requires OCR (Optical Character Recognition) to parse."
         return text.strip()
@@ -33,7 +33,8 @@ def extract_text_from_pdf(pdf_path):
 
 def extract_text_from_word(doc_path):
     try:
-        text = docx2txt.process(doc_path)
+        text = ""
+        # text = docx2txt.process(doc_path)
         if not text.strip():
             return "ERROR_EMPTY_DOC: The Word document contains no extractable text."
         return text.strip()

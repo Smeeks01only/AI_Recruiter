@@ -28,4 +28,9 @@ urlpatterns = [
     
     # Temporary seed endpoint
     path('seed/', views.seed_users, name='seed_users'),
+    
+    # Settings endpoints
+    path('settings/platform/', views.platform_settings_view, name='platform_settings'),
+    path('settings/security/', views.security_settings_view, name='security_settings'),
+    path('security/logs/', views.security_logs_view, name='security_logs'),
 ]
